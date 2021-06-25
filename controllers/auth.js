@@ -1,6 +1,7 @@
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const User = require("../models/User");
+const geocoder = require("../utils/geocoder");
 const twilio = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
@@ -18,21 +19,17 @@ exports.register = asyncHandler(async (req, res, next) => {
   if (findIfExists) {
     return next(new ErrorResponse("Phone number already Registered!", 401));
   }
-
   //Create User
   const user = await User.create({
     name,
     phone,
     password,
   });
-
-  sendAuthMessage(name);
-
   sendTokenResponse(user, 200, res);
 });
 
 //@desc   Get current Logged in User
-//@route  POST /auth/me
+//@route  GET /auth/me
 //@Acess Private
 
 exports.getMe = asyncHandler(async (req, res, next) => {
@@ -48,11 +45,18 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @route     PUT /auth/updatedetails
 // @access    Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
-  const fieldsToUpdate = {
-    name: req.body.name,
-    email: req.body.email,
-  };
-
+  const { name, email, phone } = req.body;
+  let fieldsToUpdate = {};
+  if (name) {
+    fieldsToUpdate.name = name;
+  }
+  if (email) {
+    fieldsToUpdate.email = email;
+  }
+  if (phone) {
+    fieldsToUpdate.phone = phone;
+  }
+  // console.log(fieldsToUpdate);
   const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
     new: true,
     runValidators: true,
@@ -201,8 +205,8 @@ exports.loginPassword = asyncHandler(async (req, res, next) => {
 exports.loginOtp = asyncHandler(async (req, res, next) => {
   const { phone } = req.body;
 
-  if (!phone || !password) {
-    return next(new ErrorResponse("Please provide an email and password", 404));
+  if (!phone) {
+    return next(new ErrorResponse("Phone Number not Entered", 404));
   }
 
   //Check for user
@@ -211,9 +215,62 @@ exports.loginOtp = asyncHandler(async (req, res, next) => {
   if (!user) {
     return next(new ErrorResponse("Invalid Credentials", 401));
   }
+  sendAuthMessage(user.name, phone, 200, res);
+
+  res.status(200).json({ success: true, message: "Otp has been sent" });
 });
 
-const sendAuthMessage = (name) => {
+exports.confirmOtp = asyncHandler(async (req, res, next) => {
+  const { phone } = req.params;
+  const { otp } = req.body;
+
+  const user = await User.findOne({ phone });
+  const otpdb = user.otp;
+
+  await User.findOneAndUpdate(
+    { phone },
+    { otp: null },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+
+  if (otpdb !== otp) {
+    return next(new ErrorResponse("Incorrect OTP", "401"));
+  }
+  sendTokenResponse(user, 200, res);
+});
+
+exports.updateLocation = asyncHandler(async (req, res, next) => {
+  const coordinates = req.body.coordinates;
+  const loc = await geocoder.reverse({
+    lat: coordinates[0],
+    lon: coordinates[1],
+  });
+  const location = {
+    type: "Point",
+    formattedAddress: loc[0].formattedAddress,
+    street: loc[0].streetName,
+    city: loc[0].city,
+    state: loc[0].stateCode,
+    zipcode: loc[0].zipcode,
+    country: loc[0].countryCode,
+  };
+  // console.log(location);
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    { location },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({ success: true, data: user });
+});
+
+//function to create an otp and store it into the database with a validity of 5 mins
+const sendAuthMessage = async (name, phone, statusCode, res) => {
   var otpLength = 6;
   let baseNumber = Math.pow(10, otpLength - 1);
   let number = Math.floor(Math.random() * baseNumber);
@@ -224,12 +281,14 @@ const sendAuthMessage = (name) => {
     number += baseNumber;
   }
   // console.log(twilio.messages);
-  console.log(number);
+  console.log(
+    `Hey, ${name}. Your one time authentication password is ${number}`
+  );
   // twilio.messages.create(
   //   {
   //     from: process.env.TWILIO_PHONE_NUMBER,
   //     to: process.env.CELL_PHONE_NUMBER,
-  // body: `Hey, ${name}. Your one time authentication password is ${number}`,
+  //     body: `Hey, ${name}. Your one time authentication password is ${number}`,
   //   },
   //   function (err, message) {
   //     if (err) {
@@ -237,6 +296,26 @@ const sendAuthMessage = (name) => {
   //     }
   //   }
   // );
+
+  const fieldsToUpdate = {
+    otp: number,
+  };
+
+  const user = await User.findOneAndUpdate({ phone }, fieldsToUpdate, {
+    new: true,
+    runValidators: true,
+  });
+
+  setTimeout(async () => {
+    const user = await User.findOneAndUpdate(
+      { phone },
+      { otp: null },
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  }, 1000 * 60 * 5);
 };
 
 const sendTokenResponse = (user, statusCode, res) => {

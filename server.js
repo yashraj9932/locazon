@@ -10,9 +10,11 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 
 const auth = require("./routes/auth");
+const authSeller = require("./routes/authSeller");
 app.use(express.json());
 
 app.use("/auth", auth);
+app.use("/authSeller", authSeller);
 
 app.use(errorHandler);
 
