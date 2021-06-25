@@ -1,21 +1,32 @@
 const ErrorResponse = require("../utils/errorResponse");
 const asyncHandler = require("../middleware/async");
 const User = require("../models/User");
+const twilio = require("twilio")(
+  process.env.TWILIO_ACCOUNT_SID,
+  process.env.TWILIO_AUTH_TOKEN
+);
 
-//@desc   Create new User
-//@route   POST /auth/register
-//@Acess Public
+//@desc   Create New User
+//@route  POST /auth/register
+//@Acess  Public
 
 exports.register = asyncHandler(async (req, res, next) => {
-  const { name, email, password, role } = req.body;
+  const { name, phone, password } = req.body;
+
+  const findIfExists = await User.findOne({ phone });
+  // console.log(findIfExists);
+  if (findIfExists) {
+    return next(new ErrorResponse("Phone number already Registered!", 401));
+  }
 
   //Create User
   const user = await User.create({
     name,
-    email,
+    phone,
     password,
-    role,
   });
+
+  sendAuthMessage(name);
 
   sendTokenResponse(user, 200, res);
 });
@@ -155,18 +166,20 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 // });
 
 //@desc   Login User
-//@route  POST /auth/register
+//@route  POST /auth/loginpass
 //@Acess Public
 
-exports.login = asyncHandler(async (req, res, next) => {
-  const { email, password } = req.body;
+exports.loginPassword = asyncHandler(async (req, res, next) => {
+  const { phone, password } = req.body;
 
-  if (!email || !password) {
-    return next(new ErrorResponse("Please provide an email and password", 404));
+  if (!phone || !password) {
+    return next(
+      new ErrorResponse("Please provide phone number and password", 404)
+    );
   }
 
   //Check for user
-  const user = await User.findOne({ email }).select("+password");
+  const user = await User.findOne({ phone }).select("+password");
 
   if (!user) {
     return next(new ErrorResponse("Invalid Credentials", 401));
@@ -178,8 +191,53 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorResponse("Invalid Credentials", 401));
   }
+
   sendTokenResponse(user, 200, res);
 });
+
+//@desc   Login User
+//@route  POST /auth/loginOtp
+//@Acess Public
+exports.loginOtp = asyncHandler(async (req, res, next) => {
+  const { phone } = req.body;
+
+  if (!phone || !password) {
+    return next(new ErrorResponse("Please provide an email and password", 404));
+  }
+
+  //Check for user
+  const user = await User.findOne({ phone });
+
+  if (!user) {
+    return next(new ErrorResponse("Invalid Credentials", 401));
+  }
+});
+
+const sendAuthMessage = (name) => {
+  var otpLength = 6;
+  let baseNumber = Math.pow(10, otpLength - 1);
+  let number = Math.floor(Math.random() * baseNumber);
+  /*
+    Check if number have 0 as first digit
+    */
+  if (number < baseNumber) {
+    number += baseNumber;
+  }
+  // console.log(twilio.messages);
+  console.log(number);
+  // twilio.messages.create(
+  //   {
+  //     from: process.env.TWILIO_PHONE_NUMBER,
+  //     to: process.env.CELL_PHONE_NUMBER,
+  // body: `Hey, ${name}. Your one time authentication password is ${number}`,
+  //   },
+  //   function (err, message) {
+  //     if (err) {
+  //       console.error(message);
+  //     }
+  //   }
+  // );
+};
 
 const sendTokenResponse = (user, statusCode, res) => {
   //Create token

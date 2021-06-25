@@ -5,6 +5,15 @@ const ProductSchema = new mongoose.Schema({
     type: String,
     required: [true, "Please Enter Product Name"],
   },
+  description: {
+    type: String,
+    required: true,
+    default: "",
+  },
+  stars: {
+    type: Number,
+    default: 0,
+  },
   productOf: {
     type: mongoose.Schema.ObjectId,
     ref: "Seller",
