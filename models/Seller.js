@@ -17,6 +17,7 @@ const SellerSchema = new mongoose.Schema({
   },
   totalStars: {
     type: Number,
+    default: 0,
   },
   password: {
     type: String,

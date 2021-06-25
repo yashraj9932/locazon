@@ -7,8 +7,11 @@ const ProductSchema = new mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    required: [true, "Please enter the description"],
     default: "",
+  },
+  pictures: {
+    type: [String],
   },
   stars: {
     type: Number,
@@ -33,6 +36,14 @@ const ProductSchema = new mongoose.Schema({
     },
   ],
 
+  price: {
+    type: String,
+    required: [true, "Please enter the product cost"],
+  },
+  discount: {
+    type: String,
+    default: 0,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

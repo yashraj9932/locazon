@@ -3,6 +3,10 @@ const colors = require("colors");
 const cors = require("cors");
 const app = express();
 const dotenv = require("dotenv");
+const fileupload = require("express-fileupload");
+const morgan = require("morgan");
+const path = require("path");
+
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/error");
 
@@ -10,11 +14,23 @@ dotenv.config({ path: "./config/config.env" });
 connectDB();
 
 const auth = require("./routes/auth");
+const product = require("./routes/product");
 const authSeller = require("./routes/authSeller");
 app.use(express.json());
 
+if (process.env.NODE_ENV === "development") {
+  app.use(morgan("dev"));
+}
+
+// File uploading
+app.use(fileupload());
+
+// Set static folder
+app.use(express.static(path.join(__dirname, "public")));
+
 app.use("/auth", auth);
 app.use("/authSeller", authSeller);
+app.use("/product", product);
 
 app.use(errorHandler);
 
