@@ -15,6 +15,7 @@ connectDB();
 
 const auth = require("./routes/auth");
 const product = require("./routes/product");
+const order = require("./routes/order");
 const authSeller = require("./routes/authSeller");
 app.use(express.json());
 
@@ -31,6 +32,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/auth", auth);
 app.use("/authSeller", authSeller);
 app.use("/product", product);
+app.use("/order", order);
 
 app.use(errorHandler);
 

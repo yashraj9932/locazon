@@ -12,6 +12,10 @@ const {
 } = require("../controllers/authSeller");
 const { protectSeller } = require("../middleware/authSeller");
 
+const orderRouter = require("./order");
+
+router.use("/orders", protectSeller, orderRouter);
+
 router.route("/loginpass").post(loginPassword);
 router.route("/loginOtp").post(loginOtp);
 router.route("/confirmOtp/:phone").post(confirmOtp);

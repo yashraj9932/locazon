@@ -1,6 +1,15 @@
 const mongoose = require("mongoose");
 
 const OrderSchema = new mongoose.Schema({
+  paid: {
+    type: Boolean,
+    default: false,
+  },
+  status: {
+    type: String,
+    enum: ["Active", "Complete", "Cart"],
+    default: "Cart",
+  },
   products: [
     {
       product: {
@@ -16,6 +25,11 @@ const OrderSchema = new mongoose.Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  orderOf: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true,
   },
 });
 
