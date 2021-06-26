@@ -15,7 +15,6 @@ exports.register = asyncHandler(async (req, res, next) => {
   const { name, phone, password } = req.body;
 
   const findIfExists = await Seller.findOne({ phone });
-  // console.log(findIfExists);
   if (findIfExists) {
     return next(new ErrorResponse("Phone number already Registered!", 401));
   }
@@ -56,7 +55,6 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
   if (phone) {
     fieldsToUpdate.phone = phone;
   }
-  // console.log(fieldsToUpdate);
   const seller = await Seller.findByIdAndUpdate(req.seller.id, fieldsToUpdate, {
     new: true,
     runValidators: true,
@@ -257,7 +255,6 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
     zipcode: loc[0].zipcode,
     country: loc[0].countryCode,
   };
-  // console.log(location);
   const seller = await Seller.findByIdAndUpdate(
     req.seller.id,
     { location },

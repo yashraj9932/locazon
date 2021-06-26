@@ -59,10 +59,26 @@ const SellerSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
-  orders: {
-    type: [mongoose.Schema.ObjectId], //We will compare id and show just those products which is of present seller
-    ref: "Order",
-  },
+  orders: [
+    {
+      product: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Product",
+      },
+      partOf: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Order",
+      },
+      count: {
+        type: Number,
+        default: 0,
+      },
+      status: {
+        type: String,
+        enum: ["Active", "Complete"],
+      },
+    },
+  ],
 });
 
 // Encrypt password using bcrypt

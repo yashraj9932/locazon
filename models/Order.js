@@ -5,11 +5,7 @@ const OrderSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  status: {
-    type: String,
-    enum: ["Active", "Complete", "Cart"],
-    default: "Cart",
-  },
+
   products: [
     {
       product: {
@@ -19,6 +15,11 @@ const OrderSchema = new mongoose.Schema({
       count: {
         type: Number,
         default: 0,
+      },
+      status: {
+        type: String,
+        enum: ["Active", "Complete", "Cart"],
+        default: "Cart",
       },
     },
   ],
