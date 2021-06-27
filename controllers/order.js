@@ -146,13 +146,19 @@ exports.editOrder = asyncHandler(async (req, res, next) => {
 // @route /order/:id/
 // @access Private
 
-exports.deleteOrder = asyncHandler(async (req, res, next) => {});
+exports.deleteOrder = asyncHandler(async (req, res, next) => {
+  const order = await Order.findByIdAndRemove(req.params.id);
+
+  // order.save();
+  res.status(200).json({ success: true, data: [] });
+});
 
 // @desc To finally order items in cart
 // @route /order/:id/confirm
 // @access Private
 
 exports.confirmOrder = asyncHandler(async (req, res, next) => {
+  // console.log("confirmOrder");
   const orderFind = await Order.findById(req.params.id).populate({
     path: "products",
     populate: {
@@ -217,4 +223,33 @@ exports.completeOrder = asyncHandler(async (req, res, next) => {
   if (!order) {
     return next(new ErrorResponse("Order does not exist", 404));
   }
+
+  const prodc = order.products;
+
+  prodc.map((product) => {
+    if (product.product.toString() === req.params.productId) {
+      console.log(req.params.productId);
+      product.status = "Complete";
+    }
+  });
+  await Order.findByIdAndUpdate(
+    req.params.orderId,
+    {
+      $pull: {
+        products: {},
+      },
+    },
+    { new: true, runValidators: true }
+  );
+  const ress = await Order.findByIdAndUpdate(
+    req.params.orderId,
+    {
+      $push: {
+        products: [...prodc],
+      },
+    },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({ success: true, ress });
 });

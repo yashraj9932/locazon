@@ -27,6 +27,7 @@ exports.protectSeller = asyncHandler(async (req, res, next) => {
     //decoding the token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     req.seller = await Seller.findById(decoded.id);
+    // console.log(req.seller);
 
     next();
   } catch (err) {

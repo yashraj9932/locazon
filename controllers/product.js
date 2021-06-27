@@ -2,6 +2,7 @@ const asyncHandler = require("../middleware/async");
 const Product = require("../models/Product");
 const ErrorResponse = require("../utils/errorResponse");
 const path = require("path");
+const Seller = require("../models/Seller");
 
 exports.getProducts = asyncHandler(async (req, res, next) => {
   const products = await Product.find();
@@ -10,21 +11,50 @@ exports.getProducts = asyncHandler(async (req, res, next) => {
 });
 
 exports.getProduct = asyncHandler(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
-  if (!product) {
-    return next(new ErrorResponse("No such Product with the given id", 401));
+  if (req.params.sellerId) {
+    const products = await Product.find({
+      productOf: req.params.sellerId,
+    });
+    res.status(200).json({ message: true, count: products.length, products });
+  } else {
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return next(new ErrorResponse("No such Product with the given id", 401));
+    }
+    res.status(200).json({ success: true, product });
   }
-  res.status(200).json({ success: true, product });
 });
 
 exports.createProduct = asyncHandler(async (req, res, next) => {
   req.body.productOf = req.seller.id;
   const product = await Product.create(req.body);
 
-  res.status(200).json({ success: true, product });
+  const seller = await Seller.findByIdAndUpdate(
+    req.seller.id,
+    {
+      $push: { products: product._id },
+    },
+    { new: true, runValidators: true }
+  );
+
+  res.status(200).json({ success: true, product, seller });
 });
 
 exports.editProduct = asyncHandler(async (req, res, next) => {
+  const productFind = await Product.findById(req.params.id);
+  if (!productFind) {
+    return next(new ErrorResponse("No such Product with the given id", 401));
+  }
+
+  //Making sure it is the product seller making changes
+  if (req.seller.id !== productFind.productOf.toString()) {
+    return next(
+      new ErrorResponse(
+        `Seller id with id${req.seller.id} not authorised to delete`,
+        401
+      )
+    );
+  }
   const product = await Product.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
@@ -43,11 +73,18 @@ exports.deleteProduct = asyncHandler(async (req, res, next) => {
   if (req.seller.id !== product.productOf.toString()) {
     return next(
       new ErrorResponse(
-        `Seller id with id${req.user.id} not authorised to delete`,
+        `Seller id with id${req.seller.id} not authorised to delete`,
         401
       )
     );
   }
+  const seller = await Seller.findByIdAndUpdate(
+    req.seller.id,
+    {
+      $pull: { products: product._id },
+    },
+    { new: true, runValidators: true }
+  );
 
   product.remove();
   res.status(200).json({ success: true, data: {} });
@@ -66,7 +103,7 @@ exports.productPhotoUpload = asyncHandler(async (req, res, next) => {
   if (req.seller.id !== product.productOf.toString()) {
     return next(
       new ErrorResponse(
-        `Seller id with id${req.user.id} not authorised to upload photos`,
+        `Seller id with id${req.seller.id} not authorised to upload photos`,
         401
       )
     );

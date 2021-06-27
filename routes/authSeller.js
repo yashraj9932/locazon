@@ -9,12 +9,17 @@ const {
   updateDetails,
   updateLocation,
   getMe,
+  getSellersInDistance,
 } = require("../controllers/authSeller");
+const { protect } = require("../middleware/auth");
 const { protectSeller } = require("../middleware/authSeller");
 
 const orderRouter = require("./order");
+const productRouter = require("./product");
 
 router.use("/orders", protectSeller, orderRouter);
+
+router.get("/distance/:distance", protect, getSellersInDistance);
 
 router.route("/loginpass").post(loginPassword);
 router.route("/loginOtp").post(loginOtp);
@@ -24,5 +29,7 @@ router.route("/updatedetails").put(protectSeller, updateDetails);
 router.route("/updateLocation").put(protectSeller, updateLocation);
 
 router.get("/me", protectSeller, getMe);
+
+router.use("/:sellerId", protect, productRouter);
 
 module.exports = router;

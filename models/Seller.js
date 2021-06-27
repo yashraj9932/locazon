@@ -9,7 +9,6 @@ const SellerSchema = new mongoose.Schema({
   },
   email: {
     type: String,
-    unique: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please add a valid email",
@@ -33,6 +32,7 @@ const SellerSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, "Please Enter a Phone number"],
+    unique: true,
   },
   products: {
     type: [mongoose.Schema.ObjectId],
@@ -47,7 +47,10 @@ const SellerSchema = new mongoose.Schema({
       type: String,
       enum: ["Point"],
     },
-
+    coordinates: {
+      type: [Number],
+      index: "2dsphere",
+    },
     formattedAddress: String,
     street: String,
     city: String,

@@ -193,7 +193,6 @@ exports.loginPassword = asyncHandler(async (req, res, next) => {
   if (!isMatch) {
     return next(new ErrorResponse("Invalid Credentials", 401));
   }
-
   sendTokenResponse(seller, 200, res);
 });
 
@@ -249,6 +248,7 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
   const location = {
     type: "Point",
     formattedAddress: loc[0].formattedAddress,
+    coordinates: [coordinates[1], coordinates[0]],
     street: loc[0].streetName,
     city: loc[0].city,
     state: loc[0].stateCode,
@@ -264,6 +264,27 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
     }
   );
   res.status(200).json({ success: true, data: seller });
+});
+
+exports.getSellersInDistance = asyncHandler(async (req, res, next) => {
+  // Calc radius using radians
+  // Divide dist by radius of Earth
+  // Earth Radius = 3,963 mi / 6,378 km
+  const radius = req.params.distance / 3963;
+  const lat = req.user.coordinates[0];
+  const lng = req.user.coordinates[1];
+
+  // console.log(lat, lng);
+
+  const sellers = await Seller.find({
+    location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
+  });
+
+  res.status(200).json({
+    success: true,
+    count: sellers.length,
+    data: sellers,
+  });
 });
 
 //function to create an otp and store it into the database with a validity of 5 mins

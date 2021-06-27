@@ -22,19 +22,6 @@ const ProductSchema = new mongoose.Schema({
     ref: "Seller",
     required: true,
   },
-  orderedBy: [
-    {
-      buyer: {
-        type: mongoose.Schema.ObjectId,
-        ref: "User",
-        required: true,
-      },
-      buyDate: {
-        type: Date,
-        default: Date.now,
-      },
-    },
-  ],
 
   price: {
     type: String,
