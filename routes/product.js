@@ -8,6 +8,7 @@ const {
   editProduct,
   deleteProduct,
   productPhotoUpload,
+  productPhotoDelete,
 } = require("../controllers/product");
 
 const { protectSeller } = require("../middleware/authSeller");
@@ -21,5 +22,6 @@ router
   .delete(protectSeller, deleteProduct);
 
 router.put("/:id/photo", protectSeller, productPhotoUpload);
+router.put("/:id/photoremove", protectSeller, productPhotoDelete);
 
 module.exports = router;

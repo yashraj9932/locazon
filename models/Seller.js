@@ -14,10 +14,6 @@ const SellerSchema = new mongoose.Schema({
       "Please add a valid email",
     ],
   },
-  totalStars: {
-    type: Number,
-    default: 0,
-  },
   password: {
     type: String,
     required: [true, "Please add a password"],

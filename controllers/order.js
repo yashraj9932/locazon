@@ -158,7 +158,18 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.confirmOrder = asyncHandler(async (req, res, next) => {
-  // console.log("confirmOrder");
+  const tSpentUser = await User.findById(req.user.id);
+
+  let f = 0;
+  tSpentUser.orders.map((order) => {
+    if (order.toString() === req.params.id) {
+      f = 1;
+    }
+  });
+  if (f == 1) {
+    return next(new ErrorResponse("Order is already confirmed", 401));
+  }
+
   const orderFind = await Order.findById(req.params.id).populate({
     path: "products",
     populate: {
@@ -174,7 +185,10 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
     paid: true,
   });
 
+  let sum = 0;
   orderFind.products.map(async (product) => {
+    // console.log(product.product.price);
+    sum += parseInt(product.product.price);
     const seller = await Seller.findByIdAndUpdate(
       product.product.productOf,
       {
@@ -191,6 +205,8 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
     );
   });
 
+  // console.log(sum);
+
   const prod = orderFind.products;
   var i = 0;
   for (i = 0; i < prod.length; i++) {
@@ -202,6 +218,14 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
   const ress = await Order.findByIdAndUpdate(req.params.id, {
     products: prod,
   });
+
+  sum += parseInt(tSpentUser.totalSpent);
+
+  await User.findByIdAndUpdate(
+    req.user.id,
+    { totalSpent: sum },
+    { new: true, runValidators: true }
+  );
 
   const user = await User.findByIdAndUpdate(
     req.user.id,

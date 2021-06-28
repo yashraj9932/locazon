@@ -3,6 +3,7 @@ const Product = require("../models/Product");
 const ErrorResponse = require("../utils/errorResponse");
 const path = require("path");
 const Seller = require("../models/Seller");
+var fs = require("fs");
 
 exports.getProducts = asyncHandler(async (req, res, next) => {
   const products = await Product.find();
@@ -132,18 +133,47 @@ exports.productPhotoUpload = asyncHandler(async (req, res, next) => {
 
   // Create custom filename
   file.name = `photo_${product._id}${path.parse(file.name).ext}`;
-
+  // console.log(file);
   file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
     if (err) {
       console.error(err);
       return next(new ErrorResponse(`Problem with file upload`, 500));
     }
 
-    await Product.findByIdAndUpdate(req.params.id, { photo: file.name });
+    await Product.findByIdAndUpdate(req.params.id, { picture: file.name });
 
     res.status(200).json({
       success: true,
       data: file.name,
     });
   });
+});
+
+exports.productPhotoDelete = asyncHandler(async (req, res, next) => {
+  const product = await Product.findById(req.params.id);
+  if (!product) {
+    return next(new ErrorResponse("No product with this id", 404));
+  }
+
+  //Making sure it is the product seller making changes
+  if (req.seller.id !== product.productOf.toString()) {
+    return next(
+      new ErrorResponse(
+        `Seller id with id${req.seller.id} not authorised to upload photos`,
+        401
+      )
+    );
+  }
+  const filePath = `./public/uploads/${product.picture}`;
+  // console.log(path.basename(filePath, path.extname(filePath)));
+  fs.unlinkSync(filePath);
+
+  const ress = await Product.findById(
+    req.params.id,
+    {
+      picture: "",
+    },
+    { new: true, runValidators: true }
+  );
+  res.status(200).json({ success: true, product: ress });
 });

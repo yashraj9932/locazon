@@ -10,12 +10,9 @@ const ProductSchema = new mongoose.Schema({
     required: [true, "Please enter the description"],
     default: "",
   },
-  pictures: {
-    type: [String],
-  },
-  stars: {
-    type: Number,
-    default: 0,
+  picture: {
+    type: String,
+    default: "",
   },
   productOf: {
     type: mongoose.Schema.ObjectId,
