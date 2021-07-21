@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import {
   AppBar,
   Toolbar,
@@ -53,21 +53,12 @@ const useStyles = makeStyles((theme) => ({
 const Navbar = () => {
   const classes = useStyles();
 
-  const [background, setBackground] = useState("transparent");
-
-  // useEffect(() => {
-  //   document.addEventListener("scroll", () => {
-  //     const backgroundcolor = window.scrollY < 400 ? "transparent" : "black";
-
-  //     setBackground(backgroundcolor);
-  //   });
-  // }, []);
   return (
     <div>
       <AppBar
         position="relative"
         className={classes.header}
-        style={{ backgroundColor: `${background}` }}
+        style={{ backgroundColor: "#f5efe0" }}
       >
         <Toolbar>
           <Typography variant="h5" className={classes.title}>
