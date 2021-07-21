@@ -7,6 +7,8 @@ import {
   Button,
 } from "@material-ui/core";
 
+import { Link } from "react-router-dom";
+
 const useStyles = makeStyles((theme) => ({
   homelanding: {
     minHeight: "100vh",
@@ -66,13 +68,17 @@ const Navbar = () => {
           </Typography>
           <div className={classes.navlist}>
             <Button className={classes.textColor} style={{ padding: "20px" }}>
-              <Typography>Home</Typography>
+              <Link to="/">
+                <Typography color="primary">Home</Typography>
+              </Link>
             </Button>
             <Button className={classes.textColor} style={{ padding: "20px" }}>
               <Typography>Contact</Typography>
             </Button>
             <Button className={classes.textColor} style={{ padding: "20px " }}>
-              <Typography>Register</Typography>
+              <Link to="/register">
+                <Typography color="primary">Register</Typography>
+              </Link>
             </Button>
           </div>
         </Toolbar>

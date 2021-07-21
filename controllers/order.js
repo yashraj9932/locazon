@@ -188,7 +188,10 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
   let sum = 0;
   orderFind.products.map(async (product) => {
     // console.log(product.product.price);
-    sum += parseInt(product.product.price);
+    sum +=
+      ((100 - parseInt(product.product.discount)) / 100) *
+      parseInt(product.product.price) *
+      product.count;
     const seller = await Seller.findByIdAndUpdate(
       product.product.productOf,
       {

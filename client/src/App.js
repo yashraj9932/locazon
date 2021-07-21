@@ -14,11 +14,6 @@ const theme = createTheme({
     secondary: {
       main: "#e85a4f",
     },
-    // typography: {
-    //   primary: {
-    //     main: "#00131a",
-    //   },
-    // },
     contrastThreshold: 3,
     tonalOffset: 0.2,
   },

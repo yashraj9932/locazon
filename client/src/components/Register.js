@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   TextField,
   makeStyles,
@@ -21,42 +21,69 @@ const useStyles = makeStyles((theme) => ({
   },
   welcome: {
     textAlign: "center",
+    width: "100%",
   },
 }));
-
-const onSubmit = () => {};
 
 const Register = () => {
   const classes = useStyles();
   const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [coordinates, setCoordinates] = useState([]);
+  //name,email,password,phone,coordinates
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+    setPassword("");
+    setPhone("");
+    setName("");
+    setEmail("");
+  };
+
+  useEffect(() => {
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log(position.coords.latitude, position.coords.longitude);
+      let cords = [];
+      cords.push(position.coords.latitude);
+      cords.push(position.coords.longitude);
+      setCoordinates(cords);
+    });
+  }, []);
   return (
-    <div>
+    <div
+      style={{ height: "91.9vh", marginTop: "0", backgroundColor: "#e98074" }}
+    >
       <Navbar />
-      <Grid
-        justifyContent="space-around"
-        alignItems="center"
-        container
-        style={{ height: "83.8vh", backgroundColor: "#e98074" }}
+      <form
+        onSubmit={onSubmit}
+        className={classes.root}
+        noValidate
+        autoComplete="off"
       >
-        <Grid item className={classes.welcome}>
-          <Typography variant="h2">Welcome Back!</Typography>
-          <Typography variant="h6" style={{ margin: "4% 2%" }}>
-            Not A User Yet?
-          </Typography>
-          <Typography variant="h6" style={{ margin: "4% 2%" }}>
-            Click here to Register!
-          </Typography>
-        </Grid>
-        <form className={classes.root} noValidate autoComplete="off">
+        <Grid container>
           <Grid
-            container
             item
+            container
+            xs={12}
+            md={4}
             justifyContent="center"
-            alignItems="center"
             className={classes.welcome}
           >
             <Grid item xs={12}>
+              <TextField
+                required
+                id="outlined-required"
+                label="Name"
+                variant="outlined"
+                value={name}
+                onChange={(e) => {
+                  setName(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
               <TextField
                 required
                 id="outlined-required"
@@ -66,34 +93,41 @@ const Register = () => {
                 onChange={(e) => {
                   setPhone(e.target.value);
                 }}
-                style={{ width: "100%" }}
               />
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={12} md={4}>
               <TextField
                 required
                 id="outlined-required"
+                label="Email"
+                variant="outlined"
+                value={email}
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                }}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
+              <TextField
+                required
+                id="outlined-password-input"
                 label="Password"
                 type="password"
+                autoComplete="current-password"
                 variant="outlined"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}
-                style={{ marginTop: "3%", width: "100%" }}
               />
             </Grid>
-            <Grid item xs={12}>
-              <Button
-                onClick={onSubmit}
-                style={{ marginTop: "5%", width: "100%" }}
-              >
-                Submit
-              </Button>
+
+            <Grid item xs={12} md={4}>
+              <Button type="submit">Submit</Button>
             </Grid>
           </Grid>
-        </form>
-      </Grid>
+        </Grid>
+      </form>
     </div>
   );
 };

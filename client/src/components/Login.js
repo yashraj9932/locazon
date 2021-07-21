@@ -53,15 +53,17 @@ const Login = () => {
             Not A User Yet?
           </Typography>
           <Typography color="primary" variant="h6" style={{ margin: "4% 2%" }}>
-            <Link
-              to="/register"
-              style={{ textDecoration: "none", color: "#00131a" }}
-            >
+            <Link to="/register" style={{ color: "#00131a" }}>
               Click here to Register!
             </Link>
           </Typography>
         </Grid>
-        <form className={classes.root} noValidate autoComplete="off">
+        <form
+          onSubmit={onSubmit}
+          className={classes.root}
+          noValidate
+          autoComplete="off"
+        >
           <Grid
             container
             item
@@ -97,10 +99,7 @@ const Login = () => {
               />
             </Grid>
             <Grid item xs={12}>
-              <Button
-                onClick={onSubmit}
-                style={{ marginTop: "5%", width: "100%" }}
-              >
+              <Button type="submit" style={{ marginTop: "5%", width: "100%" }}>
                 Submit
               </Button>
             </Grid>
