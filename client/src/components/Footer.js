@@ -8,7 +8,7 @@ const Footer = () => {
         position="static"
         elevation={0}
         component="footer"
-        style={{ backgroundColor: "#00131a" }}
+        style={{ backgroundColor: "#00131a", position: "fixed", bottom: "0" }}
       >
         <Toolbar
           style={{

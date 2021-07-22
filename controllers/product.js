@@ -168,7 +168,7 @@ exports.productPhotoDelete = asyncHandler(async (req, res, next) => {
   // console.log(path.basename(filePath, path.extname(filePath)));
   fs.unlinkSync(filePath);
 
-  const ress = await Product.findById(
+  const ress = await Product.findByIdAndUpdate(
     req.params.id,
     {
       picture: "",
