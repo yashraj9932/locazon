@@ -13,6 +13,8 @@ const errorHandler = require("./middleware/error");
 dotenv.config({ path: "./config/config.env" });
 connectDB();
 
+app.use(cors());
+
 const auth = require("./routes/auth");
 const product = require("./routes/product");
 const order = require("./routes/order");

@@ -257,7 +257,7 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
   };
   const user = await User.findByIdAndUpdate(
     req.user.id,
-    { location },
+    { location, coordinates },
     {
       new: true,
       runValidators: true,

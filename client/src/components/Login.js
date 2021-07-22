@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import {
   TextField,
   makeStyles,
@@ -8,6 +8,7 @@ import {
 } from "@material-ui/core";
 import Navbar from "./Navbar";
 import { Link } from "react-router-dom";
+import AuthContext from "../context/authcontext/authContext";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -26,6 +27,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Login = () => {
+  const authContext = useContext(AuthContext);
   const classes = useStyles();
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
@@ -34,6 +36,10 @@ const Login = () => {
     e.preventDefault();
     setPhone("");
     setPassword("");
+    authContext.login({
+      phone,
+      password,
+    });
   };
 
   return (
@@ -58,12 +64,7 @@ const Login = () => {
             </Link>
           </Typography>
         </Grid>
-        <form
-          onSubmit={onSubmit}
-          className={classes.root}
-          noValidate
-          autoComplete="off"
-        >
+        <form onSubmit={onSubmit} className={classes.root}>
           <Grid
             container
             item
@@ -74,7 +75,6 @@ const Login = () => {
             <Grid item xs={12}>
               <TextField
                 required
-                id="outlined-required"
                 label="Phone"
                 variant="outlined"
                 value={phone}
@@ -87,11 +87,11 @@ const Login = () => {
             <Grid item xs={12}>
               <TextField
                 required
-                id="outlined-required"
                 label="Password"
                 type="password"
                 variant="outlined"
                 value={password}
+                autoComplete="on"
                 onChange={(e) => {
                   setPassword(e.target.value);
                 }}

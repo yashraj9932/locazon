@@ -19,10 +19,6 @@ const useStyles = makeStyles((theme) => ({
       textAlign: "center",
     },
   },
-  welcome: {
-    textAlign: "center",
-    width: "100%",
-  },
 }));
 
 const Register = () => {
@@ -56,78 +52,89 @@ const Register = () => {
       style={{ height: "91.9vh", marginTop: "0", backgroundColor: "#e98074" }}
     >
       <Navbar />
-      <form
-        onSubmit={onSubmit}
-        className={classes.root}
-        noValidate
-        autoComplete="off"
+      <Grid
+        container
+        justifyContent="center"
+        alignItems="center"
+        style={{ height: "100%" }}
       >
-        <Grid container>
-          <Grid
-            item
-            container
-            xs={12}
-            md={4}
-            justifyContent="center"
-            className={classes.welcome}
-          >
-            <Grid item xs={12}>
-              <TextField
-                required
-                id="outlined-required"
-                label="Name"
-                variant="outlined"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField
-                required
-                id="outlined-required"
-                label="Phone"
-                variant="outlined"
-                value={phone}
-                onChange={(e) => {
-                  setPhone(e.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField
-                required
-                id="outlined-required"
-                label="Email"
-                variant="outlined"
-                value={email}
-                onChange={(e) => {
-                  setEmail(e.target.value);
-                }}
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
-              <TextField
-                required
-                id="outlined-password-input"
-                label="Password"
-                type="password"
-                autoComplete="current-password"
-                variant="outlined"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                }}
-              />
-            </Grid>
-
-            <Grid item xs={12} md={4}>
-              <Button type="submit">Submit</Button>
-            </Grid>
+        <form
+          onSubmit={onSubmit}
+          className={classes.root}
+          style={{ paddingBottom: "6%" }}
+          // className={classes.welcome}
+        >
+          {/* <Grid container> */}
+          <Grid item xs={12}>
+            <Typography
+              gutterBottom
+              style={{
+                fontSize: "3em",
+                borderBottom: "1px solid black",
+                marginBottom: "5%",
+              }}
+            >
+              The Name
+            </Typography>
+            <TextField
+              required
+              label="Name"
+              variant="outlined"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+              }}
+              style={{ width: "100%" }}
+            />
           </Grid>
-        </Grid>
-      </form>
+          <Grid item xs={12}>
+            <TextField
+              required
+              label="Phone"
+              variant="outlined"
+              value={phone}
+              onChange={(e) => {
+                setPhone(e.target.value);
+              }}
+              style={{ width: "100%" }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              label="Email"
+              variant="outlined"
+              value={email}
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+              style={{ width: "100%" }}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <TextField
+              required
+              id="outlined-password-input"
+              label="Password"
+              type="password"
+              autoComplete="current-password"
+              variant="outlined"
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+              style={{ width: "100%" }}
+            />
+          </Grid>
+
+          <Grid item xs={12}>
+            <Button type="submit" style={{ width: "100%", margin: "2vh auto" }}>
+              Sign Up
+            </Button>
+          </Grid>
+          {/* </Grid> */}
+        </form>
+      </Grid>
     </div>
   );
 };

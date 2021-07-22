@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   AppBar,
   Toolbar,
@@ -6,6 +6,7 @@ import {
   makeStyles,
   Button,
 } from "@material-ui/core";
+import AuthContext from "../context/authcontext/authContext";
 
 import { Link } from "react-router-dom";
 
@@ -54,6 +55,11 @@ const useStyles = makeStyles((theme) => ({
 
 const Navbar = () => {
   const classes = useStyles();
+  const authContext = useContext(AuthContext);
+
+  const onClick = () => {
+    authContext.logout();
+  };
 
   return (
     <div>
@@ -76,10 +82,21 @@ const Navbar = () => {
               <Typography>Contact</Typography>
             </Button>
             <Button className={classes.textColor} style={{ padding: "20px " }}>
-              <Link to="/register">
-                <Typography color="primary">Register</Typography>
-              </Link>
+              {authContext.token ? (
+                <Link onClick={onClick}>
+                  <Typography color="primary">Logout</Typography>
+                </Link>
+              ) : (
+                <Link to="/register">
+                  <Typography color="primary">Register</Typography>
+                </Link>
+              )}
             </Button>
+            {/* <Button className={classes.textColor} style={{ padding: "20px " }}>
+              <Link to="/login">
+                <Typography color="primary">Login</Typography>
+              </Link>
+            </Button> */}
           </div>
         </Toolbar>
       </AppBar>
