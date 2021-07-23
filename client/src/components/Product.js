@@ -1,5 +1,4 @@
-import axios from "axios";
-import React, { useEffect, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import ProductContext from "../context/product/prodContext";
 
 import {
@@ -33,7 +32,7 @@ const useStyles = makeStyles((theme) => ({
 const Product = ({ product }) => {
   // const Product = ({ product, order, setOrder }) => {
   const prodContext = useContext(ProductContext);
-  const { order, setOrder } = prodContext;
+  const { orders, setOrders } = prodContext;
   const [count, setCount] = useState(1);
   const classes = useStyles();
   const { description, discount, picture, price, productOf } = product;
@@ -99,15 +98,19 @@ const Product = ({ product }) => {
             onClick={() => {
               let initCount = 0;
 
-              const ordd = order.filter((ord) => {
+              const ordd = orders.filter((ord) => {
                 if (ord.product === product._id) initCount = ord.count;
                 return ord.product !== product._id;
               });
 
-              setOrder([
-                ...ordd,
-                { product: product._id, count: count + initCount },
-              ]);
+              setOrders({
+                ordd,
+                order: {
+                  product: product._id,
+                  count: count + initCount,
+                },
+              });
+              console.log(orders);
               setCount(1);
             }}
           >

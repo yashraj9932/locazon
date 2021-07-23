@@ -9,6 +9,7 @@ import { createTheme, ThemeProvider } from "@material-ui/core";
 // import PrivateRoute from "./routing/PrivateRoute";
 import Shop from "./components/Shop";
 import Products from "./components/Products";
+import Profile from "./components/Profile";
 
 const theme = createTheme({
   palette: {
@@ -34,6 +35,7 @@ const App = () => {
           <Route exact path="/register" component={Register} />
           <Route exact path="/shop/:id" component={Shop} />
           <Route exact path="/products" component={Products} />
+          <Route exact path="/profile" component={Profile} />
         </Switch>
         <Footer />
       </Router>

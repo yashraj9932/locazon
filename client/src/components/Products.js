@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme) => ({
 const Products = () => {
   const classes = useStyles();
   const [dist, setDist] = useState("");
-  // const [order, setOrder] = useState([]);
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
   useEffect(() => {
@@ -74,14 +73,7 @@ const Products = () => {
         <Grid container justifyContent="center">
           {filtered &&
             filtered.map((product, i) => {
-              return (
-                <Product
-                  key={i}
-                  product={product}
-                  // order={order}
-                  // setOrder={setOrder}
-                />
-              );
+              return <Product key={i} product={product} />;
             })}
         </Grid>
       </form>

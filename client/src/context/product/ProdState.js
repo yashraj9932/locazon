@@ -13,9 +13,13 @@ const ProdState = (props) => {
 
   const [state, dispatch] = useReducer(prodReducer, initialState);
 
-  const setOrders = () => {};
+  const setOrders = (order) => {
+    dispatch({ type: ADD_ORDER, payload: order });
+  };
 
-  const confirmOrder = () => {};
+  const confirmOrder = async () => {
+    const res = await axios.post();
+  };
 
   return (
     <ProdContext.Provider

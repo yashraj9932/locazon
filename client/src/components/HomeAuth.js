@@ -82,7 +82,7 @@ const HomeAuth = () => {
           {shops &&
             shops.map((shop) => {
               console.log(shop);
-              const { name, phone, location, products } = shop;
+              const { name, phone, location } = shop;
               return (
                 <Grid
                   item
