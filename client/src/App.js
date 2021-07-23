@@ -6,7 +6,7 @@ import Home from "./components/Home";
 import HomeAuth from "./components/HomeAuth";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
 import { createTheme, ThemeProvider } from "@material-ui/core";
-import PrivateRoute from "./routing/PrivateRoute";
+// import PrivateRoute from "./routing/PrivateRoute";
 import Shop from "./components/Shop";
 import Products from "./components/Products";
 

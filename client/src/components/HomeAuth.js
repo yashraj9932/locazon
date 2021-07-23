@@ -47,7 +47,6 @@ const HomeAuth = () => {
       const res = await axios.get(
         `http://localhost:5000/authSeller/distance/500`
       );
-      console.log(res.data.data);
       setShops(res.data.data);
     } catch (error) {
       console.log(error);
@@ -124,7 +123,16 @@ const HomeAuth = () => {
                         Share
                       </Button>
                       <Button size="small" color="primary">
-                        <Link to={`/shop/${shop._id}`}>Know More</Link>
+                        <Link
+                          to={{
+                            pathname: `/shop/${shop._id}`,
+                            state: {
+                              shop,
+                            },
+                          }}
+                        >
+                          Know More
+                        </Link>
                       </Button>
                     </CardActions>
                   </Card>

@@ -81,22 +81,35 @@ const Navbar = () => {
             <Button className={classes.textColor} style={{ padding: "20px" }}>
               <Typography>Contact</Typography>
             </Button>
-            <Button className={classes.textColor} style={{ padding: "20px " }}>
-              {authContext.token ? (
+            {authContext.token ? (
+              <Button
+                className={classes.textColor}
+                style={{ padding: "20px " }}
+              >
                 <Link onClick={onClick}>
                   <Typography color="primary">Logout</Typography>
                 </Link>
-              ) : (
-                <Link to="/register">
-                  <Typography color="primary">Register</Typography>
-                </Link>
-              )}
-            </Button>
-            {/* <Button className={classes.textColor} style={{ padding: "20px " }}>
-              <Link to="/login">
-                <Typography color="primary">Login</Typography>
-              </Link>
-            </Button> */}
+              </Button>
+            ) : (
+              <div>
+                <Button
+                  className={classes.textColor}
+                  style={{ padding: "20px " }}
+                >
+                  <Link to="/register">
+                    <Typography color="primary">Register</Typography>
+                  </Link>
+                </Button>
+                <Button
+                  className={classes.textColor}
+                  style={{ padding: "20px " }}
+                >
+                  <Link to="/login">
+                    <Typography color="primary">Login</Typography>
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </Toolbar>
       </AppBar>

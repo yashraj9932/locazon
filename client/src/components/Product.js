@@ -1,7 +1,7 @@
 import axios from "axios";
 import React, { useEffect, useContext, useState } from "react";
-import AuthContext from "../context/authcontext/authContext";
-import Navbar from "./Navbar";
+import ProductContext from "../context/product/prodContext";
+
 import {
   TextField,
   makeStyles,
@@ -31,6 +31,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const Product = ({ product }) => {
+  // const Product = ({ product, order, setOrder }) => {
+  const prodContext = useContext(ProductContext);
+  const { order, setOrder } = prodContext;
+  const [count, setCount] = useState(1);
   const classes = useStyles();
   const { description, discount, picture, price, productOf } = product;
   return (
@@ -60,15 +64,29 @@ const Product = ({ product }) => {
           </CardContent>
         </CardActionArea>
         <CardActions style={{ justifyContent: "center" }}>
-          <Button size="small" color="primary" variant="contained">
+          <Button
+            size="small"
+            color="primary"
+            variant="contained"
+            onClick={() => {
+              if (count > 1) setCount(count - 1);
+            }}
+          >
             -
           </Button>
           <TextField
             defaultValue="1"
             style={{ width: "20px", textAlign: "center" }}
-            onChange
+            value={count}
           />
-          <Button size="small" color="primary" variant="contained">
+          <Button
+            size="small"
+            color="primary"
+            variant="contained"
+            onClick={() => {
+              setCount(count + 1);
+            }}
+          >
             +
           </Button>
         </CardActions>
@@ -78,6 +96,20 @@ const Product = ({ product }) => {
             color="secondary"
             variant="contained"
             style={{ width: "100%" }}
+            onClick={() => {
+              let initCount = 0;
+
+              const ordd = order.filter((ord) => {
+                if (ord.product === product._id) initCount = ord.count;
+                return ord.product !== product._id;
+              });
+
+              setOrder([
+                ...ordd,
+                { product: product._id, count: count + initCount },
+              ]);
+              setCount(1);
+            }}
           >
             Add to Cart
           </Button>

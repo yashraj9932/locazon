@@ -4,11 +4,13 @@ import "./index.css";
 import App from "./App";
 
 import AuthState from "./context/authcontext/AuthState";
-
+import ProdState from "./context/product/ProdState";
 ReactDOM.render(
   <React.StrictMode>
     <AuthState>
-      <App />
+      <ProdState>
+        <App />
+      </ProdState>
     </AuthState>
   </React.StrictMode>,
   document.getElementById("root")

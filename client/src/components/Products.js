@@ -1,19 +1,7 @@
 import axios from "axios";
-import React, { useEffect, useContext, useState } from "react";
-import AuthContext from "../context/authcontext/authContext";
+import React, { useEffect, useState } from "react";
 import Navbar from "./Navbar";
-import {
-  TextField,
-  makeStyles,
-  Card,
-  CardMedia,
-  CardContent,
-  CardActionArea,
-  CardActions,
-  Button,
-  Grid,
-  Typography,
-} from "@material-ui/core";
+import { TextField, makeStyles, Grid } from "@material-ui/core";
 import Product from "./Product";
 
 const useStyles = makeStyles((theme) => ({
@@ -33,10 +21,8 @@ const useStyles = makeStyles((theme) => ({
 
 const Products = () => {
   const classes = useStyles();
-
-  const authContext = useContext(AuthContext);
   const [dist, setDist] = useState("");
-  const [order, setOrder] = useState({});
+  // const [order, setOrder] = useState([]);
   const [products, setProducts] = useState([]);
   const [filtered, setFiltered] = useState([]);
   useEffect(() => {
@@ -47,7 +33,6 @@ const Products = () => {
   useEffect(async () => {
     try {
       const res = await axios.get(`http://localhost:5000/product`);
-      console.log(res.data.products);
       setProducts(res.data.products);
       setFiltered(res.data.products);
     } catch (error) {
@@ -89,7 +74,14 @@ const Products = () => {
         <Grid container justifyContent="center">
           {filtered &&
             filtered.map((product, i) => {
-              return <Product key={i} product={product} />;
+              return (
+                <Product
+                  key={i}
+                  product={product}
+                  // order={order}
+                  // setOrder={setOrder}
+                />
+              );
             })}
         </Grid>
       </form>

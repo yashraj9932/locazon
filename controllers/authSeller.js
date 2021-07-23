@@ -278,7 +278,7 @@ exports.getSellersInDistance = asyncHandler(async (req, res, next) => {
 
   const sellers = await Seller.find({
     location: { $geoWithin: { $centerSphere: [[lng, lat], radius] } },
-  });
+  }).populate("products");
 
   res.status(200).json({
     success: true,
