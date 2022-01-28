@@ -278,21 +278,21 @@ const sendAuthMessage = async (name, phone, statusCode, res) => {
     number += baseNumber;
   }
   // console.log(twilio.messages);
-  console.log(
-    `Hey, ${name}. Your one time authentication password is ${number}`
-  );
-  // twilio.messages.create(
-  //   {
-  //     from: process.env.TWILIO_PHONE_NUMBER,
-  //     to: process.env.CELL_PHONE_NUMBER,
-  //     body: `Hey, ${name}. Your one time authentication password is ${number}`,
-  //   },
-  //   function (err, message) {
-  //     if (err) {
-  //       console.error(message);
-  //     }
-  //   }
+  // console.log(
+  //   `Hey, ${name}. Your one time authentication password is ${number}`
   // );
+  twilio.messages.create(
+    {
+      from: process.env.TWILIO_PHONE_NUMBER,
+      to: process.env.CELL_PHONE_NUMBER,
+      body: `Hey, ${name}. Your one time authentication password is ${number}`,
+    },
+    function (err, message) {
+      if (err) {
+        console.error(message);
+      }
+    }
+  );
 
   const fieldsToUpdate = {
     otp: number,
