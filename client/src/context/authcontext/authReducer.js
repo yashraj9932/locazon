@@ -12,18 +12,19 @@ import {
 const authReducer = (state, action) => {
   switch (action.type) {
     case USER_LOADED:
-      localStorage.setItem("user", action.payload);
-
+      localStorage.setItem("user", JSON.stringify(action.payload.data));
+      console.log(action.payload.data);
       return {
         ...state,
         isAuthenticated: true,
         loading: false,
-        user: action.payload,
+        user: action.payload.data,
       };
 
     case REGISTER_SUCCESS:
     case LOGIN_SUCCESS:
       localStorage.setItem("token", action.payload.token);
+
       return {
         ...state,
         ...action.payload,
@@ -34,9 +35,7 @@ const authReducer = (state, action) => {
     case AUTH_ERROR:
     case LOGIN_FAIL:
     case LOGOUT:
-      localStorage.removeItem("token");
-      localStorage.setItem("user", action.payload);
-
+      //   localStorage.removeItem("token");
       return {
         ...state,
         token: null,

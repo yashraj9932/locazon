@@ -18,19 +18,21 @@ const AuthState = (props) => {
   const initialState = {
     token: localStorage.getItem("token"),
     isAuthenticated: null,
-    loading: true,
-    user: localStorage.getItem("user"),
+    loading: false,
+    user: JSON.parse(localStorage.getItem("user")),
     error: null,
   };
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   //Load User
   const loadUser = async () => {
+    console.log(localStorage.getItem("token"));
+
     if (localStorage.token) {
       setAuthToken(localStorage.token);
     }
     try {
-      const res = await axios.get("/auth/me");
+      const res = await axios.get("http://localhost:5000/auth/me");
       dispatch({
         type: USER_LOADED,
         payload: res.data,
@@ -49,8 +51,11 @@ const AuthState = (props) => {
     };
 
     try {
-      const res = await axios.post("/api/users", formData, config);
-      console.log(res);
+      const res = await axios.post(
+        "http://localhost:5000/auth/register/user",
+        formData,
+        config
+      );
       dispatch({
         type: REGISTER_SUCCESS,
         payload: res.data,
@@ -59,7 +64,7 @@ const AuthState = (props) => {
     } catch (err) {
       dispatch({
         type: REGISTER_FAIL,
-        payload: err.response.data.msg,
+        payload: err.response.data.error,
       });
     }
   };
@@ -71,7 +76,6 @@ const AuthState = (props) => {
         "Content-Type": "application/json",
       },
     };
-
     try {
       const res = await axios.post(
         "http://localhost:5000/auth/loginpass/user",
@@ -84,10 +88,9 @@ const AuthState = (props) => {
       });
       loadUser();
     } catch (err) {
-      console.log(err);
       dispatch({
         type: LOGIN_FAIL,
-        payload: err.response.data,
+        payload: err.response.data.error,
       });
     }
   };

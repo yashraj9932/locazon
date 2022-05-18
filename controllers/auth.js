@@ -18,12 +18,15 @@ exports.register = asyncHandler(async (req, res, next) => {
   if (findIfExists) {
     return next(new ErrorResponse("Phone number already Registered!", 401));
   }
+  console.log("Yash");
   //Create User
+
   const user = await User.create({
     name,
     phone,
     password,
   });
+
   sendTokenResponse(user, 200, res);
 });
 

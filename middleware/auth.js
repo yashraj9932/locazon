@@ -6,6 +6,7 @@ const asyncHandler = require("./async");
 //Protect routes
 exports.protect = asyncHandler(async (req, res, next) => {
   // console.log("auth");
+  console.log(req.headers.authorization);
   let token;
   if (
     req.headers.authorization &&
@@ -13,7 +14,7 @@ exports.protect = asyncHandler(async (req, res, next) => {
   ) {
     token = req.headers.authorization.split(" ")[1];
   }
-
+  console.log(token);
   //To get the token from the cookie
   // else if (req.cookies.token) {
   //   token = req.cookies.token;

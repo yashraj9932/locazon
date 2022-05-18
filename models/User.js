@@ -6,15 +6,14 @@ const geocoder = require("../utils/geocoder");
 const UserSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: [true, "Please Enter your name"],
   },
   email: {
     type: String,
-    unique: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please add a valid email",
     ],
+    index: true,
   },
   password: {
     type: String,
@@ -29,6 +28,7 @@ const UserSchema = new mongoose.Schema({
 
   phone: {
     type: String,
+    unique: true,
     required: [true, "Please Enter a Phone number"],
   },
   totalSpent: {
