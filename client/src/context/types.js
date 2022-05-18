@@ -6,3 +6,6 @@ export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "LOGIN_FAIL";
 export const LOGOUT = "LOGOUT";
 export const CLEAR_ERRORS = "CLEAR_ERR";
+
+export const ORDERS_SUCCESS = "ORDERS_SUCCESS";
+export const ORDERS_FAIL = "ORDERS_FAIL";

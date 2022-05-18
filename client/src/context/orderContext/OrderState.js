@@ -2,36 +2,27 @@ import React, { useReducer } from "react";
 import axios from "axios";
 import OrderContext from "./orderContext";
 import orderReducer from "./orderReducer";
-import {} from "../types";
+import { ORDERS_SUCCESS, ORDERS_FAIL } from "../types";
 
 const OrderState = (props) => {
   const initialState = {
-    error: null,
+    orders: [],
+    errorOrder: null,
   };
   const [state, dispatch] = useReducer(orderReducer, initialState);
 
   //Functions
-  //Login eg
-  const login = async (formData) => {
-    const config = {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    };
+  const getOrders = async () => {
     try {
-      const res = await axios.post(
-        "http://localhost:5000/auth/loginpass/user",
-        formData,
-        config
-      );
+      const res = await axios.get("http://localhost:5000/auth/orders");
       dispatch({
-        type: LOGIN_SUCCESS,
+        type: ORDERS_SUCESS,
         payload: res.data,
       });
       loadUser();
     } catch (err) {
       dispatch({
-        type: LOGIN_FAIL,
+        type: ORDERS_FAIL,
         payload: err.response.data.error,
       });
     }
@@ -40,8 +31,9 @@ const OrderState = (props) => {
   return (
     <OrderContext.Provider
       value={{
+        orders: state.orders,
         error: state.error,
-        login,
+        getOrders,
       }}
     >
       {props.children}
