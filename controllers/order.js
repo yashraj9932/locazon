@@ -30,17 +30,11 @@ exports.getCompleteOrders = asyncHandler(async (req, res, next) => {
       orderOf: req.user.id,
     }).populate("products");
 
-    let reslt = [];
-    orders.map((order) => {
-      reslt = [
-        ...reslt,
-        ...order.products.filter((product) => {
-          return product.status === "Completed";
-        }),
-      ];
+    const completeOrders = orders.map((order) => {
+      return order.delivered === true ? order : null;
     });
 
-    res.status(200).json({ success: true, order: reslt });
+    res.status(200).json({ success: true, completeOrders });
   } else if (req.seller && req.seller.id) {
     const seller = await Seller.findById(req.seller.id)
       .populate({
@@ -55,12 +49,13 @@ exports.getCompleteOrders = asyncHandler(async (req, res, next) => {
           path: "partOf",
         },
       });
-    let reslt = [];
-    reslt = seller.orders.filter((order) => {
-      return order.status === "Completed";
+    let result = [];
+    result = seller.orders.filter((order) => {
+      console.log(order);
+      return order.partOf.delivered === true;
     });
 
-    res.status(200).json({ success: true, order: reslt });
+    res.status(200).json({ success: true, order: result });
   }
 });
 
@@ -158,7 +153,6 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
   //To give discount
   let sum = 0;
   order.products.map(async (product) => {
-    // console.log(product.product.price);
     sum +=
       ((100 - parseInt(product.product.discount)) / 100) *
       parseInt(product.product.price) *
@@ -170,7 +164,7 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
           orders: {
             product: product.product._id,
             count: product.count,
-            partOf: req.params.id,
+            partOf: order._id,
           },
         },
       },
