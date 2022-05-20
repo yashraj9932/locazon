@@ -9,8 +9,9 @@ import AuthContext from "../context/authContext/authContext";
 const LoginScreen = () => {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
+  const [mode, setMode] = useState("password");
   const authContext = useContext(AuthContext);
-  const { login, error, loading, user } = authContext;
+  const { login, error, loading, user, loginOtp, confirmOtp } = authContext;
 
   let location = useLocation();
   const navigate = useNavigate();
@@ -24,10 +25,17 @@ const LoginScreen = () => {
 
   const submitHandler = (e) => {
     e.preventDefault();
-    login({
-      phone,
-      password,
-    });
+    if (mode === "password") {
+      login({
+        phone,
+        password,
+      });
+    } else {
+      confirmOtp({
+        phone,
+        password,
+      });
+    }
   };
 
   return (
@@ -49,16 +57,38 @@ const LoginScreen = () => {
         </Form.Group>
 
         <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
+          <Form.Label>{mode === "otp" ? "OTP" : "Password"}</Form.Label>
           <Form.Control
             type="password"
             placeholder="Enter password"
             value={password}
-            style={{ marginBottom: "4%" }}
             onChange={(e) => setPassword(e.target.value)}
             autoComplete="true"
           ></Form.Control>
         </Form.Group>
+        <Row className="py-3" style={{ textAlign: "center" }}>
+          {mode === "otp" && (
+            <Col
+              onClick={() => {
+                loginOtp({
+                  phone,
+                  password,
+                });
+              }}
+            >
+              Send OTP
+            </Col>
+          )}
+        </Row>
+        <Row style={{ textAlign: "center", marginBottom: "2%" }}>
+          <Col
+            onClick={() => {
+              setMode((mode) => (mode === "otp" ? "password" : "otp"));
+            }}
+          >
+            Login with {mode === "otp" ? "Password" : "OTP"}
+          </Col>
+        </Row>
         <div style={{ textAlign: "center" }}>
           <Button type="submit" variant="primary">
             Sign In

@@ -187,8 +187,7 @@ exports.loginOtp = asyncHandler(async (req, res, next) => {
 });
 
 exports.confirmOtp = asyncHandler(async (req, res, next) => {
-  const { phone } = req.params;
-  const { otp } = req.body;
+  const { phone, otp } = req.body;
 
   const user = await User.findOne({ phone });
   const otpdb = user.otp;
@@ -210,10 +209,13 @@ exports.confirmOtp = asyncHandler(async (req, res, next) => {
 
 exports.updateLocation = asyncHandler(async (req, res, next) => {
   const coordinates = req.body.coordinates;
+  console.log(213);
   const loc = await geocoder.reverse({
     lat: coordinates[0],
     lon: coordinates[1],
   });
+
+  // console.log(loc);
   const location = {
     type: "Point",
     formattedAddress: loc[0].formattedAddress,

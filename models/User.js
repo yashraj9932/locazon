@@ -59,6 +59,18 @@ const UserSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  products: [
+    {
+      product: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Product",
+      },
+      count: {
+        type: Number,
+        default: 1,
+      },
+    },
+  ],
 });
 
 // Encrypt password using bcrypt

@@ -64,27 +64,6 @@ exports.getCompleteOrders = asyncHandler(async (req, res, next) => {
   }
 });
 
-// @desc    Get Products in the User's cart
-// @route   /order/cart
-// @access  Private
-exports.getCartOrders = asyncHandler(async (req, res, next) => {
-  const orders = await Order.find({
-    orderOf: req.user.id,
-  }).populate("products");
-
-  let reslt = [];
-  orders.map((order) => {
-    reslt = [
-      ...reslt,
-      ...order.products.filter((product) => {
-        return product.status === "Cart";
-      }),
-    ];
-  });
-
-  res.status(200).json({ success: true, order: reslt });
-});
-
 // @desc    To add items in the cart
 // @route   /order
 // @access  Private
@@ -98,14 +77,20 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
       )
     );
   }
+  if (req.user.products.length !== 0) {
+    return next(new ErrorResponse("Cart Already Created", 404));
+  }
   const { products } = req.body;
 
-  const order = await Order.create({
-    products,
-    orderOf: req.user.id,
-  });
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $push: { products },
+    },
+    { new: true, runValidators: true }
+  );
 
-  res.status(200).json({ success: true, order });
+  res.status(200).json({ success: true, cart: user });
 });
 
 // @desc  To edit items in the cart
@@ -113,20 +98,16 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.editOrder = asyncHandler(async (req, res, next) => {
-  const order = await Order.findById(req.params.id);
-  if (!order) {
-    return next(new ErrorResponse("Such ordern does not exist", 404));
-  }
-
-  if (req.user.id !== order.orderOf.toString()) {
-    return next(new ErrorResponse("Not authorised", 404));
+  const cart = req.user.products;
+  if (cart.length === 0) {
+    return next(new ErrorResponse("Cart does not exist", 404));
   }
 
   const product = req.body;
   const { productId, count } = product;
 
-  const ress = await Order.findByIdAndUpdate(
-    req.params.id,
+  const ress = await User.findByIdAndUpdate(
+    req.user._id,
     {
       $pull: { products: { product: productId } },
     },
@@ -158,35 +139,25 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.confirmOrder = asyncHandler(async (req, res, next) => {
-  const tSpentUser = await User.findById(req.user.id);
+  console.log("Yash");
+  const finalUser = await User.findById(req.user._id);
+  const products = finalUser.products;
 
-  let f = 0;
-  tSpentUser.orders.map((order) => {
-    if (order.toString() === req.params.id) {
-      f = 1;
-    }
-  });
-  if (f == 1) {
-    return next(new ErrorResponse("Order is already confirmed", 401));
+  if (products.length === 0) {
+    return next(new ErrorResponse("No such cart product to confirm", 404));
   }
 
-  const orderFind = await Order.findById(req.params.id).populate({
-    path: "products",
-    populate: {
-      path: "product",
-    },
-  });
-
-  if (!orderFind) {
-    return next(new ErrorResponse("No such existing order", 404));
-  }
-
-  const order = await Order.findByIdAndUpdate(req.params.id, {
+  //To confirm payment and Order
+  const order = await Order.create({
+    orderOf: req.user._id,
+    products,
+    amount: 0,
     paid: true,
   });
 
+  //To give discount
   let sum = 0;
-  orderFind.products.map(async (product) => {
+  order.products.map(async (product) => {
     // console.log(product.product.price);
     sum +=
       ((100 - parseInt(product.product.discount)) / 100) *
@@ -200,7 +171,6 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
             product: product.product._id,
             count: product.count,
             partOf: req.params.id,
-            status: "Active",
           },
         },
       },
@@ -210,23 +180,23 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
 
   // console.log(sum);
 
-  const prod = orderFind.products;
-  var i = 0;
-  for (i = 0; i < prod.length; i++) {
-    if ((prod[i].status = "Cart")) {
-      prod[i].status = "Active";
-    }
-  }
+  // const ress = await Order.findByIdAndUpdate(req.params.id, {
+  //   products: prod,
+  // });
 
-  const ress = await Order.findByIdAndUpdate(req.params.id, {
-    products: prod,
-  });
-
-  sum += parseInt(tSpentUser.totalSpent);
+  sum += parseInt(finalUser.totalSpent);
 
   await User.findByIdAndUpdate(
-    req.user.id,
+    req.user._id,
     { totalSpent: sum },
+    { new: true, runValidators: true }
+  );
+
+  await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $pull: { products: {} },
+    },
     { new: true, runValidators: true }
   );
 
@@ -238,45 +208,32 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
 
   const seller = await res
     .status(200)
-    .json({ success: true, order: ress, user });
+    .json({ success: true, order: order, user });
 });
 
 // @desc To mark order as completed from seller side
 // @route  /order/:orderId/:productId
 // @access Private
 exports.completeOrder = asyncHandler(async (req, res, next) => {
-  const order = await Order.findById(req.params.orderId);
+  let order = await Order.findById(req.params.orderId);
+  const productId = req.params.productId;
 
   if (!order) {
     return next(new ErrorResponse("Order does not exist", 404));
   }
 
-  const prodc = order.products;
-
-  prodc.map((product) => {
-    if (product.product.toString() === req.params.productId) {
-      console.log(req.params.productId);
-      product.status = "Complete";
+  const finalOrder = await Order.findByIdAndUpdate(
+    req.params.orderId,
+    {
+      $set: {
+        "products.$[elem].delivered": true,
+      },
+    },
+    {
+      arrayFilters: [{ "elem.product": productId }],
     }
-  });
-  await Order.findByIdAndUpdate(
-    req.params.orderId,
-    {
-      $pull: {
-        products: {},
-      },
-    },
-    { new: true, runValidators: true }
-  );
-  const ress = await Order.findByIdAndUpdate(
-    req.params.orderId,
-    {
-      $push: {
-        products: [...prodc],
-      },
-    },
-    { new: true, runValidators: true }
   );
 
-  res.status(200).json({ success: true, ress });
+  order = await Order.findById(req.params.orderId);
+  res.status(200).json({ success: true, order });
 });

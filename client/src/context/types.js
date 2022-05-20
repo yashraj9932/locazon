@@ -9,3 +9,8 @@ export const CLEAR_ERRORS = "CLEAR_ERR";
 
 export const ORDERS_SUCCESS = "ORDERS_SUCCESS";
 export const ORDERS_FAIL = "ORDERS_FAIL";
+export const CLEAR_OERRORS = "CLEAR_OERRORS";
+export const CART_ORDERS = "CART_ORDERS";
+
+export const UPDATE_FAIL = "UPDATE_FAIL";
+export const ORDER_CANCELLED = "ORDER_CANCELLED";

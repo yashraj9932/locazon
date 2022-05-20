@@ -7,13 +7,13 @@ import {
   LOGIN_FAIL,
   LOGOUT,
   CLEAR_ERRORS,
+  UPDATE_FAIL,
 } from "../types";
 
 const authReducer = (state, action) => {
   switch (action.type) {
     case USER_LOADED:
       localStorage.setItem("user", JSON.stringify(action.payload.data));
-      console.log(action.payload.data);
       return {
         ...state,
         isAuthenticated: true,
@@ -44,6 +44,8 @@ const authReducer = (state, action) => {
         user: null,
         error: action.payload,
       };
+    case UPDATE_FAIL:
+      return { ...state, error: action.payload };
     case CLEAR_ERRORS:
       return {
         ...state,

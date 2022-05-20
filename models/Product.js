@@ -32,6 +32,10 @@ const ProductSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  inCartOf: {
+    type: [mongoose.Schema.ObjectId],
+    ref: "User",
+  },
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

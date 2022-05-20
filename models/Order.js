@@ -5,7 +5,10 @@ const OrderSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-
+  amount: {
+    type: Number,
+    required: true,
+  },
   products: [
     {
       product: {
@@ -14,12 +17,11 @@ const OrderSchema = new mongoose.Schema({
       },
       count: {
         type: Number,
-        default: 0,
+        default: 1,
       },
-      status: {
-        type: String,
-        enum: ["Active", "Complete", "Cart"],
-        default: "Cart",
+      delivered: {
+        type: Boolean,
+        default: false,
       },
     },
   ],
@@ -31,6 +33,14 @@ const OrderSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "User",
     required: true,
+  },
+  delivered: {
+    type: Boolean,
+    default: false,
+  },
+  orderAddress: {
+    type: String,
+    // required: true,
   },
 });
 

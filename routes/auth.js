@@ -18,7 +18,7 @@ router.use("/orders", protect, orderRouter);
 
 router.route("/loginpass/user").post(loginPassword);
 router.route("/loginOtp/user").post(loginOtp);
-router.route("/confirmOtp/user/:phone").post(confirmOtp);
+router.route("/confirmOtp/user").post(confirmOtp);
 router.route("/register/user").post(register);
 router.route("/updatedetails/user").put(protect, updateDetails);
 router.route("/updateLocation/user").put(protect, updateLocation);

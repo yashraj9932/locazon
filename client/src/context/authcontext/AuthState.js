@@ -12,7 +12,10 @@ import {
   LOGIN_FAIL,
   LOGOUT,
   CLEAR_ERRORS,
+  UPDATE_FAIL,
 } from "../types";
+
+const { REACT_APP_BASE_URL } = process.env;
 
 const AuthState = (props) => {
   const initialState = {
@@ -94,6 +97,95 @@ const AuthState = (props) => {
       });
     }
   };
+  const loginOtp = async (formData) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      await axios.post(
+        "http://localhost:5000/auth/loginOtp/user",
+        formData,
+        config
+      );
+    } catch (err) {
+      dispatch({
+        type: LOGIN_FAIL,
+        payload: err.response.data.error,
+      });
+    }
+  };
+
+  const confirmOtp = async (formData) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      const res = await axios.post(
+        "http://localhost:5000/auth/confirmOtp/user",
+        formData,
+        config
+      );
+      dispatch({
+        type: LOGIN_SUCCESS,
+        payload: res.data,
+      });
+      loadUser();
+    } catch (err) {
+      dispatch({
+        type: LOGIN_FAIL,
+        payload: err.response.data.error,
+      });
+    }
+  };
+
+  const updateLocation = async (location) => {
+    if (localStorage.token) {
+      setAuthToken(localStorage.token);
+    }
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      await axios.put(
+        `${REACT_APP_BASE_URL}/auth/updateLocation/user`,
+        { coordinates: location },
+        config
+      );
+      loadUser();
+    } catch (err) {
+      dispatch({
+        type: UPDATE_FAIL,
+        payload: err.response.data.error,
+      });
+    }
+  };
+
+  const updateDetails = async (formData) => {
+    const config = {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    };
+    try {
+      await axios.put(
+        "http://localhost:5000/auth/updatedetails/user",
+        formData,
+        config
+      );
+      loadUser();
+    } catch (err) {
+      dispatch({
+        type: UPDATE_FAIL,
+        payload: err.response.data.error,
+      });
+    }
+  };
 
   //Logout
   const logout = () => dispatch({ type: LOGOUT });
@@ -113,7 +205,11 @@ const AuthState = (props) => {
         clearErrors,
         loadUser,
         login,
+        loginOtp,
         logout,
+        confirmOtp,
+        updateLocation,
+        updateDetails,
       }}
     >
       {props.children}

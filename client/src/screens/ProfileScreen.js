@@ -1,111 +1,79 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from "react-router-dom";
-import { Table, Form, Button, Row, Col } from "react-bootstrap";
+// import { useNavigate } from "react-router-dom";
+import { Table, Button, Row, Col } from "react-bootstrap";
 import { LinkContainer } from "react-router-bootstrap";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
+import OrderContext from "../context/orderContext/orderContext";
 import AuthContext from "../context/authContext/authContext";
+import ProfileEdit from "../components/ProfileEdit";
 
 const ProfileScreen = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState(null);
+  const [editP, seteditP] = useState(false);
+  const orderContext = useContext(OrderContext);
+  const { getOrders, errorOrder, loading, orders } = orderContext;
   const authContext = useContext(AuthContext);
-  const { login, error, loading, user } = authContext;
-  const navigate = useNavigate();
+  const { user } = authContext;
+  // const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!user) {
-  //     navigate("/login");
-  //   } else {
-  //     if (!user || !user.name) {
-  //       // dispatch({ type: USER_UPDATE_PROFILE_RESET });
-  //       // dispatch(getUserDetails("profile"));
-  //       // dispatch(listMyOrders());
-  //     } else {
-  //       setName(user.name);
-  //       setEmail(user.email);
-  //     }
-  //   }
-  // }, [navigate, user]);
+  useEffect(() => {
+    getOrders();
+  }, []);
 
-  const submitHandler = (e) => {
-    e.preventDefault();
-    // if (password !== confirmPassword) {
-    //   setMessage("Passwords do not match");
-    // } else {
-    //   dispatch(updateUserProfile({ id: user._id, name, email, password }));
-    // }
-  };
-  console.log(user);
-  const { orders } = user;
+  const { name, phone, email, location, totalSpent } = user;
   return (
     <Row>
-      <Col md={6} style={{ margin: "0 auto" }}>
-        <h2>User Profile</h2>
+      <Col md={9} style={{ margin: "5% auto" }}>
         {message && <Message variant="danger">{message}</Message>}
-        {}
-        {/* {success && <Message variant="success">Profile Updated</Message>} */}
+
+        <h2>User Profile</h2>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <div style={{ flex: 1 }}>
+            <img
+              style={{
+                border: "1px solid gray",
+                padding: "2%",
+                borderRadius: "50%",
+                width: "80%",
+                // height: "50%",
+              }}
+              src="https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png"
+              alt="mepic"
+            ></img>
+          </div>
+          <div style={{ flex: 2, textAlign: "left" }}>
+            {name && <p>Name: {name}</p>}
+            {phone && <p>Phone: {phone}</p>}
+            {email && <p>Email: {email}</p>}
+            {location && <p>Location: {location.formattedAddress}</p>}
+            {totalSpent && <p>Total Spent: INR{totalSpent}</p>}
+          </div>
+        </div>
+      </Col>
+      <Col md={9}>
+        <div style={{ float: "right" }}>
+          <Button onClick={() => seteditP((editP) => !editP)} variant="primary">
+            Edit Profile
+          </Button>
+        </div>
+      </Col>
+      <Col style={{ margin: "0 auto" }} md={6}>
+        <div style={{ transition: "opacity 10s ease-in-out" }}>
+          {editP && <ProfileEdit />}
+        </div>
+      </Col>
+      <Col md={9} style={{ margin: "4% auto" }}>
+        <h2>My Orders</h2>
         {loading ? (
           <Loader />
-        ) : error ? (
-          <Message variant="danger">{error}</Message>
-        ) : (
-          <Form onSubmit={submitHandler}>
-            <Form.Group controlId="name">
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                type="name"
-                placeholder="Enter name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId="email">
-              <Form.Label>Email Address</Form.Label>
-              <Form.Control
-                type="email"
-                placeholder="Enter email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId="password">
-              <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Form.Group controlId="confirmPassword">
-              <Form.Label>Confirm Password</Form.Label>
-              <Form.Control
-                type="password"
-                placeholder="Confirm password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              ></Form.Control>
-            </Form.Group>
-
-            <Button type="submit" variant="primary">
-              Update
-            </Button>
-          </Form>
-        )}
-      </Col>
-      {/* <Col md={9}>
-        <h2>My Orders</h2>
-        {loadingOrders ? (
-          <Loader />
-        ) : errorOrders ? (
-          <Message variant="danger">{errorOrders}</Message>
+        ) : errorOrder ? (
+          <Message variant="danger">{errorOrder}</Message>
         ) : (
           <Table striped bordered hover responsive className="table-sm">
             <thead>
@@ -125,8 +93,11 @@ const ProfileScreen = () => {
                   <td>{order.createdAt.substring(0, 10)}</td>
                   <td>{order.totalPrice}</td>
                   <td>
-                    {order.isPaid ? (
-                      order.paidAt.substring(0, 10)
+                    {order.paid ? (
+                      <i
+                        className="fas fa-check"
+                        style={{ color: "green" }}
+                      ></i>
                     ) : (
                       <i className="fas fa-times" style={{ color: "red" }}></i>
                     )}
@@ -139,7 +110,15 @@ const ProfileScreen = () => {
                     )}
                   </td>
                   <td>
-                    <LinkContainer to={`/order/${order._id}`}>
+                    <LinkContainer
+                      to={{
+                        pathname: `/order/${order._id}`,
+                        query: { order: order },
+                      }}
+                    >
+                      {/* to={`/order/${order._id}`}
+                      params={{ order }}
+                    > */}
                       <Button className="btn-sm" variant="light">
                         Details
                       </Button>
@@ -150,7 +129,7 @@ const ProfileScreen = () => {
             </tbody>
           </Table>
         )}
-      </Col> */}
+      </Col>
     </Row>
   );
 };

@@ -4,7 +4,7 @@ import { Table, Button } from "react-bootstrap";
 import Message from "../components/Message";
 import Loader from "../components/Loader";
 
-const OrderListScreen = ({ history }) => {
+const OrderListScreen = ({ history, orders }) => {
   //   const dispatch = useDispatch();
 
   //   const orderList = useSelector((state) => state.orderList);
@@ -44,7 +44,7 @@ const OrderListScreen = ({ history }) => {
             </tr>
           </thead>
           <tbody>
-            {/* {orders.map((order) => (
+            {orders.map((order) => (
               <tr key={order._id}>
                 <td>{order._id}</td>
                 <td>{order.user && order.user.name}</td>
@@ -52,7 +52,7 @@ const OrderListScreen = ({ history }) => {
                 <td>${order.totalPrice}</td>
                 <td>
                   {order.isPaid ? (
-                    order.paidAt.substring(0, 10)
+                    <i className="fas fa-check" style={{ color: "green" }}></i>
                   ) : (
                     <i className="fas fa-times" style={{ color: "red" }}></i>
                   )}
@@ -72,7 +72,7 @@ const OrderListScreen = ({ history }) => {
                   </LinkContainer>
                 </td>
               </tr>
-            ))} */}
+            ))}
           </tbody>
         </Table>
       )}

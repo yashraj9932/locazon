@@ -6,7 +6,6 @@ const asyncHandler = require("./async");
 //Protect routes
 exports.protect = asyncHandler(async (req, res, next) => {
   // console.log("auth");
-  console.log(req.headers.authorization);
   let token;
   if (
     req.headers.authorization &&

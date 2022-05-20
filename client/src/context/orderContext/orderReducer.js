@@ -1,4 +1,9 @@
-import { ORDERS_SUCCESS, ORDERS_FAIL } from "../types";
+import {
+  ORDERS_SUCCESS,
+  ORDERS_FAIL,
+  CLEAR_OERRORS,
+  CART_ORDERS,
+} from "../types";
 
 const orderReducer = (state, action) => {
   switch (action.type) {
@@ -7,12 +12,17 @@ const orderReducer = (state, action) => {
         ...state,
         orders: action.payload,
       };
+    case CART_ORDERS:
+      return {
+        ...state,
+        cartOrders: action.payload,
+      };
     case ORDERS_FAIL:
       return {
         ...state,
         error: action.payload,
       };
-    case CLEAR_ERRORS:
+    case CLEAR_OERRORS:
       return {
         ...state,
         error: null,
