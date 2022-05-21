@@ -125,8 +125,15 @@ exports.editOrder = asyncHandler(async (req, res, next) => {
 exports.deleteOrder = asyncHandler(async (req, res, next) => {
   const order = await Order.findByIdAndRemove(req.params.id);
 
+  const user = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      $pull: { orders: req.params.id },
+    },
+    { new: true, runValidators: true }
+  );
   // order.save();
-  res.status(200).json({ success: true, data: [] });
+  res.status(200).json({ success: true, user });
 });
 
 // @desc To finally order items in cart
@@ -134,19 +141,28 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.confirmOrder = asyncHandler(async (req, res, next) => {
-  console.log("Yash");
-  const finalUser = await User.findById(req.user._id);
+  // console.log("Yash");
+  const finalUser = await User.findById(req.user._id).populate({
+    path: "products",
+    populate: {
+      path: "product",
+    },
+  });
+
   const products = finalUser.products;
 
   if (products.length === 0) {
     return next(new ErrorResponse("No such cart product to confirm", 404));
   }
-
+  let amount = 0;
+  for (var i = 0; i < products.length; i++) {
+    amount += products[i].product.price;
+  }
   //To confirm payment and Order
   const order = await Order.create({
     orderOf: req.user._id,
     products,
-    amount: 0,
+    amount,
     paid: true,
   });
 
@@ -227,7 +243,18 @@ exports.completeOrder = asyncHandler(async (req, res, next) => {
       arrayFilters: [{ "elem.product": productId }],
     }
   );
-
   order = await Order.findById(req.params.orderId);
+  var i = 0,
+    c = 0;
+  for (i = 0; i < order.products.length; i++) {
+    if (order.products[i].delivered === true) c++;
+  }
+  if (i + 1 == c) {
+    order = await Order.findByIdAndUpdate(
+      req.params.orderId,
+      { $set: { delivered: true } },
+      {}
+    );
+  }
   res.status(200).json({ success: true, order });
 });

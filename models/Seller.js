@@ -57,6 +57,10 @@ const SellerSchema = new mongoose.Schema({
     type: String,
     default: null,
   },
+  profilepicture: {
+    type: String,
+    default: "",
+  },
   orders: [
     {
       product: {

@@ -18,7 +18,8 @@ const { protectSeller } = require("../middleware/authSeller");
 //actually it is /auth/orders
 router.route("/").get(getOrders).post(protect, createOrder);
 
-router.route("/cartEdit").put(protect, editOrder).delete(protect, deleteOrder);
+router.route("/cartEdit").put(protect, editOrder);
+router.route("/:id").delete(protect, deleteOrder);
 router.route("/confirm").put(protect, confirmOrder);
 
 //actually it is /auth and /authSeller /orders/complete

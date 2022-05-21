@@ -23,16 +23,16 @@ const OrderScreen = () => {
   const navigate = useNavigate();
   const orderId = params.id;
   const orderContext = useContext(OrderContext);
-  const { payOrder, deleteOrder, loading, orders } = orderContext;
+  const { payOrder, deleteOrder, orders } = orderContext;
   const authContext = useContext(AuthContext);
   const { user, error } = authContext;
 
   let order = orders.map((order) => {
-    return order._id == orderId ? order : null;
+    return order._id === orderId ? order : null;
   });
   console.log(order);
   useEffect(() => {}, [order]);
-  if (order._id == order) {
+  if (order._id === order) {
     //   Calculate prices
     const addDecimals = (num) => {
       return (Math.round(num * 100) / 100).toFixed(2);
@@ -156,7 +156,7 @@ const OrderScreen = () => {
               <ListGroup.Item>
                 <Row>
                   <Col>Tax</Col>
-                  <Col>$ {0.18 * order.itemsPrice}</Col>
+                  <Col>INR {0.18 * order.itemsPrice}</Col>
                 </Row>
               </ListGroup.Item>
               <ListGroup.Item>

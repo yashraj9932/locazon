@@ -55,6 +55,10 @@ const UserSchema = new mongoose.Schema({
     zipcode: String,
     country: String,
   },
+  profilepicture: {
+    type: String,
+    default: "",
+  },
   otp: {
     type: String,
     default: null,
