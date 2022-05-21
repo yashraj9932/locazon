@@ -6,6 +6,9 @@ const twilio = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
+const path = require("path");
+
+var fs = require("fs");
 
 //@desc   Create New User
 //@route  POST /auth/register
@@ -18,7 +21,6 @@ exports.register = asyncHandler(async (req, res, next) => {
   if (findIfExists) {
     return next(new ErrorResponse("Phone number already Registered!", 401));
   }
-  console.log("Yash");
   //Create User
 
   const user = await User.create({
@@ -186,6 +188,10 @@ exports.loginOtp = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, message: "Otp has been sent" });
 });
 
+//@desc  To Confirm Otp
+//@route POST /auth/confirmOtp/user
+//@Acess Public
+
 exports.confirmOtp = asyncHandler(async (req, res, next) => {
   const { phone, otp } = req.body;
 
@@ -207,9 +213,12 @@ exports.confirmOtp = asyncHandler(async (req, res, next) => {
   sendTokenResponse(user, 200, res);
 });
 
+//@desc  To Remove Profile Picture
+//@route PUT /auth/updateLocation/user
+//@Acess Private
+
 exports.updateLocation = asyncHandler(async (req, res, next) => {
   const coordinates = req.body.coordinates;
-  console.log(213);
   const loc = await geocoder.reverse({
     lat: coordinates[0],
     lon: coordinates[1],
@@ -236,7 +245,81 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
   res.status(200).json({ success: true, data: user });
 });
 
-//function to create an otp and store it into the database with a validity of 5 mins
+//@desc  To Add Profile Picture
+//@route PUT /auth/picadd
+//@Acess Private
+exports.profilePhotoUploadUser = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+
+  if (!user) {
+    return next(new ErrorResponse(`No user found`, 404));
+  }
+
+  if (!req.files) {
+    return next(new ErrorResponse(`Please upload a file`, 400));
+  }
+
+  const file = req.files.file;
+
+  // Make sure the image is a photo
+  if (!file.mimetype.startsWith("image")) {
+    return next(new ErrorResponse(`Please upload an image file`, 400));
+  }
+
+  // Check filesize
+  if (file.size > process.env.MAX_FILE_UPLOAD) {
+    return next(
+      new ErrorResponse(
+        `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+        400
+      )
+    );
+  }
+
+  // Create custom filename
+  file.name = `photo_${user._id}${path.parse(file.name).ext}`;
+  // console.log(file);
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err) {
+      console.error(err);
+      return next(new ErrorResponse(`Problem with file upload`, 500));
+    }
+
+    await User.findByIdAndUpdate(req.user._id, { profilepicture: file.name });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
+  });
+});
+
+//@desc  To Remove Profile Picture
+//@route DELETE /auth/picremove
+//@Acess Private
+
+exports.profilePhotoDeleteUser = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+
+  if (!user) {
+    return next(new ErrorResponse(`No user found`, 404));
+  }
+
+  const filePath = `./public/uploads/${user.profilepicture}`;
+  // console.log(path.basename(filePath, path.extname(filePath)));
+  fs.unlinkSync(filePath);
+
+  const ress = await User.findByIdAndUpdate(
+    req.user._id,
+    {
+      profilepicture: "",
+    },
+    { new: true, runValidators: true }
+  );
+  res.status(200).json({ success: true, user: ress });
+});
+
+//Creates an otp and stores it into the database with a validity of 5 mins
 const sendAuthMessage = async (name, phone, statusCode, res) => {
   var otpLength = 6;
   let baseNumber = Math.pow(10, otpLength - 1);
@@ -285,6 +368,7 @@ const sendAuthMessage = async (name, phone, statusCode, res) => {
   }, 1000 * 60 * 5);
 };
 
+//To genearate the token and send it forward when successful login done
 const sendTokenResponse = (user, statusCode, res) => {
   //Create token
   const token = user.getSignedJwtToken();

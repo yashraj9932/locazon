@@ -10,6 +10,8 @@ const {
   updateLocation,
   getMe,
   getSellersInDistance,
+  profilePhotoUploadSeller,
+  profilePhotoDeleteSeller,
 } = require("../controllers/authSeller");
 const { protect } = require("../middleware/auth");
 const { protectSeller } = require("../middleware/authSeller");
@@ -27,6 +29,8 @@ router.route("/confirmOtp/:phone").post(confirmOtp);
 router.route("/register").post(register);
 router.route("/updatedetails").put(protectSeller, updateDetails);
 router.route("/updateLocation").put(protectSeller, updateLocation);
+router.route("/picadd").put(protectSeller, profilePhotoUploadSeller);
+router.route("/picremove").delete(protectSeller, profilePhotoDeleteSeller);
 
 router.get("/me", protectSeller, getMe);
 

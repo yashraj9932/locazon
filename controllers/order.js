@@ -141,7 +141,6 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.confirmOrder = asyncHandler(async (req, res, next) => {
-  // console.log("Yash");
   const finalUser = await User.findById(req.user._id).populate({
     path: "products",
     populate: {
@@ -187,8 +186,6 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
       { new: true, runValidators: true }
     );
   });
-
-  // console.log(sum);
 
   // const ress = await Order.findByIdAndUpdate(req.params.id, {
   //   products: prod,

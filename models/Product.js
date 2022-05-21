@@ -36,6 +36,12 @@ const ProductSchema = new mongoose.Schema({
     type: [mongoose.Schema.ObjectId],
     ref: "User",
   },
+  averagerating: {
+    type: Number,
+  },
+  totalRatings: {
+    type: Number,
+  },
 });
 
 module.exports = mongoose.model("Product", ProductSchema);

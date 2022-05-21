@@ -6,6 +6,8 @@ const twilio = require("twilio")(
   process.env.TWILIO_ACCOUNT_SID,
   process.env.TWILIO_AUTH_TOKEN
 );
+const path = require("path");
+var fs = require("fs");
 
 //@desc   Create New Seller
 //@route  POST /auth/register
@@ -285,6 +287,75 @@ exports.getSellersInDistance = asyncHandler(async (req, res, next) => {
     count: sellers.length,
     data: sellers,
   });
+});
+
+exports.profilePhotoUploadSeller = asyncHandler(async (req, res, next) => {
+  const seller = req.seller;
+
+  if (!seller) {
+    return next(new ErrorResponse(`No seller found`, 404));
+  }
+
+  if (!req.files) {
+    return next(new ErrorResponse(`Please upload a file`, 400));
+  }
+
+  const file = req.files.file;
+
+  // Make sure the image is a photo
+  if (!file.mimetype.startsWith("image")) {
+    return next(new ErrorResponse(`Please upload an image file`, 400));
+  }
+
+  // Check filesize
+  if (file.size > process.env.MAX_FILE_UPLOAD) {
+    return next(
+      new ErrorResponse(
+        `Please upload an image less than ${process.env.MAX_FILE_UPLOAD}`,
+        400
+      )
+    );
+  }
+
+  // Create custom filename
+  file.name = `photo_${seller._id}${path.parse(file.name).ext}`;
+  // console.log(file);
+  file.mv(`${process.env.FILE_UPLOAD_PATH}/${file.name}`, async (err) => {
+    if (err) {
+      console.error(err);
+      return next(new ErrorResponse(`Problem with file upload`, 500));
+    }
+
+    await Seller.findByIdAndUpdate(req.seller._id, {
+      profilepicture: file.name,
+    });
+
+    res.status(200).json({
+      success: true,
+      data: file.name,
+    });
+  });
+});
+
+exports.profilePhotoDeleteSeller = asyncHandler(async (req, res, next) => {
+  const seller = req.seller;
+
+  if (!seller) {
+    return next(new ErrorResponse(`No Seller found`, 404));
+  }
+
+  const filePath = `./public/uploads/${seller.profilepicture}`;
+  // console.log(path.basename(filePath, path.extname(filePath)));
+  fs.unlinkSync(filePath);
+
+  const ress = await Seller.findByIdAndUpdate(
+    req.seller._id,
+    {
+      profilepicture: "",
+    },
+    { new: true, runValidators: true }
+  );
+  res.status(200).json({ success: true, seller: ress });
 });
 
 //function to create an otp and store it into the database with a validity of 5 mins

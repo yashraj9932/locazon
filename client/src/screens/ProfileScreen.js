@@ -21,7 +21,8 @@ const ProfileScreen = () => {
     getOrders();
   }, []);
 
-  const { name, phone, email, location, totalSpent } = user;
+  const { name, phone, email, location, totalSpent, profilepicture } = user;
+  console.log(profilepicture);
   return (
     <Row>
       <Col md={9} style={{ margin: "5% auto" }}>
@@ -43,7 +44,11 @@ const ProfileScreen = () => {
                 width: "80%",
                 // height: "50%",
               }}
-              src="https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png"
+              src={
+                profilepicture !== ""
+                  ? `http://localhost:5000/uploads/${profilepicture}`
+                  : "https://www.business2community.com/wp-content/uploads/2017/08/blank-profile-picture-973460_640.png"
+              }
               alt="mepic"
             ></img>
           </div>

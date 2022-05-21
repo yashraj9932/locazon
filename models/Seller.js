@@ -13,6 +13,9 @@ const SellerSchema = new mongoose.Schema({
       "Please add a valid email",
     ],
   },
+  description: {
+    type: String,
+  },
   password: {
     type: String,
     required: [true, "Please add a password"],

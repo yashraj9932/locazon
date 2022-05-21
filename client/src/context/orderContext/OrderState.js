@@ -32,7 +32,6 @@ const OrderState = (props) => {
         payload: res.data.orders,
       });
     } catch (err) {
-      console.log(err.response.data.error);
       dispatch({
         type: ORDERS_FAIL,
         payload: err.response,
@@ -48,14 +47,12 @@ const OrderState = (props) => {
     }
     try {
       const res = await axios.get("http://localhost:5000/order/cart");
-      // console.log(res);
 
       dispatch({
         type: CART_ORDERS,
         payload: res.data.order,
       });
     } catch (err) {
-      console.log(err.response.data.error);
       dispatch({
         type: ORDERS_FAIL,
         payload: err.response,
@@ -73,7 +70,6 @@ const OrderState = (props) => {
         type: ORDER_CANCELLED,
       });
     } catch (err) {
-      console.log(err.response.data.error);
       dispatch({
         type: ORDERS_FAIL,
         payload: err.response,

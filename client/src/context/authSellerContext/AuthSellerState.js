@@ -31,8 +31,6 @@ const AuthSellerState = (props) => {
 
   //Load User
   const loadSeller = async () => {
-    console.log(localStorage.getItem("token"));
-
     if (localStorage.token) {
       setAuthToken(localStorage.token);
     }

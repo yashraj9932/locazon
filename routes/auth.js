@@ -9,6 +9,8 @@ const {
   updateDetails,
   updateLocation,
   getMe,
+  profilePhotoUploadUser,
+  profilePhotoDeleteUser,
 } = require("../controllers/auth");
 const { protect } = require("../middleware/auth");
 
@@ -22,6 +24,8 @@ router.route("/confirmOtp/user").post(confirmOtp);
 router.route("/register/user").post(register);
 router.route("/updatedetails/user").put(protect, updateDetails);
 router.route("/updateLocation/user").put(protect, updateLocation);
+router.route("/picadd").put(protect, profilePhotoUploadUser);
+router.route("/picremove").delete(protect, profilePhotoDeleteUser);
 router.get("/me", protect, getMe);
 
 module.exports = router;

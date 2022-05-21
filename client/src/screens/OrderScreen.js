@@ -30,7 +30,6 @@ const OrderScreen = () => {
   let order = orders.map((order) => {
     return order._id === orderId ? order : null;
   });
-  console.log(order);
   useEffect(() => {}, [order]);
   if (order._id === order) {
     //   Calculate prices
