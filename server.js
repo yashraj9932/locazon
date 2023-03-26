@@ -37,7 +37,7 @@ app.use("/auth", auth);
 app.use("/authSeller", authSeller);
 app.use("/product", product);
 app.use("/order", order);
-app.use("/doc", swaggerUi.serve, swaggerUi.setup(swaggerFile));
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 
 app.use(errorHandler);
 
