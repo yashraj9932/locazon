@@ -6,6 +6,8 @@ const dotenv = require("dotenv");
 const fileupload = require("express-fileupload");
 const morgan = require("morgan");
 const path = require("path");
+const swaggerUi = require("swagger-ui-express");
+const swaggerFile = require("./swagger_output.json");
 
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/error");
@@ -31,6 +33,7 @@ app.use(fileupload());
 // Set static folder
 app.use(express.static(path.join(__dirname, "public")));
 
+app.use("/", swaggerUi.serve, swaggerUi.setup(swaggerFile));
 app.use("/auth", auth);
 app.use("/authSeller", authSeller);
 app.use("/product", product);

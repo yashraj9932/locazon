@@ -9,6 +9,8 @@ const ErrorResponse = require("../utils/errorResponse");
 // @access Private
 
 exports.getOrders = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   if (req.user && req.user.id) {
     // const orders = await Order.findOne({ orderOf: req.user.id });
     const user = await User.findById(req.user.id).populate("orders");
@@ -25,6 +27,8 @@ exports.getOrders = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.getCompleteOrders = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   if (req.user && req.user.id) {
     const orders = await Order.find({
       orderOf: req.user.id,
@@ -64,6 +68,8 @@ exports.getCompleteOrders = asyncHandler(async (req, res, next) => {
 // @access  Private
 
 exports.createOrder = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   if (req.body.products.length === 0) {
     return next(
       new ErrorResponse(
@@ -93,6 +99,8 @@ exports.createOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.editOrder = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   const cart = req.user.products;
   if (cart.length === 0) {
     return next(new ErrorResponse("Cart does not exist", 404));
@@ -123,6 +131,8 @@ exports.editOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.deleteOrder = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   const order = await Order.findByIdAndRemove(req.params.id);
 
   const user = await User.findByIdAndUpdate(
@@ -141,6 +151,8 @@ exports.deleteOrder = asyncHandler(async (req, res, next) => {
 // @access Private
 
 exports.confirmOrder = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   const finalUser = await User.findById(req.user._id).populate({
     path: "products",
     populate: {
@@ -222,6 +234,8 @@ exports.confirmOrder = asyncHandler(async (req, res, next) => {
 // @route  /order/:orderId/:productId
 // @access Private
 exports.completeOrder = asyncHandler(async (req, res, next) => {
+  // #swagger.tags = ['Orders']
+
   let order = await Order.findById(req.params.orderId);
   const productId = req.params.productId;
 

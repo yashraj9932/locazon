@@ -15,6 +15,7 @@ var fs = require("fs");
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, phone, password } = req.body;
+  // #swagger.tags = ['Sellers']
 
   const findIfExists = await Seller.findOne({ phone });
   if (findIfExists) {
@@ -35,6 +36,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 
 exports.getMe = asyncHandler(async (req, res, next) => {
   const seller = await Seller.findById(req.seller.id);
+  // #swagger.tags = ['Sellers']
 
   res.status(200).json({
     success: true,
@@ -175,6 +177,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 
 exports.loginPassword = asyncHandler(async (req, res, next) => {
   const { phone, password } = req.body;
+  // #swagger.tags = ['Sellers']
 
   if (!phone || !password) {
     return next(
@@ -203,6 +206,7 @@ exports.loginPassword = asyncHandler(async (req, res, next) => {
 //@Acess Public
 exports.loginOtp = asyncHandler(async (req, res, next) => {
   const { phone } = req.body;
+  // #swagger.tags = ['Sellers']
 
   if (!phone) {
     return next(new ErrorResponse("Phone Number not Entered", 404));
@@ -222,6 +226,7 @@ exports.loginOtp = asyncHandler(async (req, res, next) => {
 exports.confirmOtp = asyncHandler(async (req, res, next) => {
   const { phone } = req.params;
   const { otp } = req.body;
+  // #swagger.tags = ['Sellers']
 
   const seller = await Seller.findOne({ phone });
   const otpdb = seller.otp;
@@ -247,6 +252,8 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
     lat: coordinates[0],
     lon: coordinates[1],
   });
+  // #swagger.tags = ['Sellers']
+
   const location = {
     type: "Point",
     formattedAddress: loc[0].formattedAddress,
@@ -272,6 +279,8 @@ exports.getSellersInDistance = asyncHandler(async (req, res, next) => {
   // Calc radius using radians
   // Divide dist by radius of Earth
   // Earth Radius = 3,963 mi / 6,378 km
+  // #swagger.tags = ['Sellers']
+
   const radius = req.params.distance / 3963;
   const lat = req.user.coordinates[0];
   const lng = req.user.coordinates[1];
@@ -291,6 +300,7 @@ exports.getSellersInDistance = asyncHandler(async (req, res, next) => {
 
 exports.profilePhotoUploadSeller = asyncHandler(async (req, res, next) => {
   const seller = req.seller;
+  // #swagger.tags = ['Sellers']
 
   if (!seller) {
     return next(new ErrorResponse(`No seller found`, 404));

@@ -7,7 +7,8 @@
     "start": "node server.js",
     "server": "nodemon server.js",
     "client": "npm start --prefix client",
-    "dev": "concurrently \"npm run server\" \"npm run client\""
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "swagger-autogen": "node swagger.js"
   },
   "author": "Yash Raj Goel",
   "license": "ISC",
@@ -24,6 +25,8 @@
     "morgan": "^1.10.0",
     "node-geocoder": "^3.27.0",
     "node-mailer": "^0.1.1",
+    "swagger-autogen": "^2.23.1",
+    "swagger-ui-express": "^4.6.2",
     "twilio": "^3.64.0"
   },
   "devDependencies": {

@@ -16,7 +16,7 @@ var fs = require("fs");
 
 exports.register = asyncHandler(async (req, res, next) => {
   const { name, phone, password } = req.body;
-
+  // #swagger.tags = ['Users']
   const findIfExists = await User.findOne({ phone });
   if (findIfExists) {
     return next(new ErrorResponse("Phone number already Registered!", 401));
@@ -38,6 +38,7 @@ exports.register = asyncHandler(async (req, res, next) => {
 
 exports.getMe = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.user.id);
+  // #swagger.tags = ['Users']
 
   res.status(200).json({
     success: true,
@@ -50,6 +51,8 @@ exports.getMe = asyncHandler(async (req, res, next) => {
 // @access    Private
 exports.updateDetails = asyncHandler(async (req, res, next) => {
   const { name, email, phone } = req.body;
+  // #swagger.tags = ['Users']
+
   let fieldsToUpdate = {};
   if (name) {
     fieldsToUpdate.name = name;
@@ -143,6 +146,7 @@ exports.updateDetails = asyncHandler(async (req, res, next) => {
 
 exports.loginPassword = asyncHandler(async (req, res, next) => {
   const { phone, password } = req.body;
+  // #swagger.tags = ['Users']
 
   if (!phone || !password) {
     return next(
@@ -172,6 +176,7 @@ exports.loginPassword = asyncHandler(async (req, res, next) => {
 //@Acess Public
 exports.loginOtp = asyncHandler(async (req, res, next) => {
   const { phone } = req.body;
+  // #swagger.tags = ['Users']
 
   if (!phone) {
     return next(new ErrorResponse("Phone Number not Entered", 404));
@@ -194,6 +199,7 @@ exports.loginOtp = asyncHandler(async (req, res, next) => {
 
 exports.confirmOtp = asyncHandler(async (req, res, next) => {
   const { phone, otp } = req.body;
+  // #swagger.tags = ['Users']
 
   const user = await User.findOne({ phone });
   const otpdb = user.otp;
@@ -219,6 +225,8 @@ exports.confirmOtp = asyncHandler(async (req, res, next) => {
 
 exports.updateLocation = asyncHandler(async (req, res, next) => {
   const coordinates = req.body.coordinates;
+  // #swagger.tags = ['Users']
+
   const loc = await geocoder.reverse({
     lat: coordinates[0],
     lon: coordinates[1],
@@ -250,6 +258,7 @@ exports.updateLocation = asyncHandler(async (req, res, next) => {
 //@Acess Private
 exports.profilePhotoUploadUser = asyncHandler(async (req, res, next) => {
   const user = req.user;
+  // #swagger.tags = ['Users']
 
   if (!user) {
     return next(new ErrorResponse(`No user found`, 404));
@@ -300,6 +309,7 @@ exports.profilePhotoUploadUser = asyncHandler(async (req, res, next) => {
 
 exports.profilePhotoDeleteUser = asyncHandler(async (req, res, next) => {
   const user = req.user;
+  // #swagger.tags = ['Users']
 
   if (!user) {
     return next(new ErrorResponse(`No user found`, 404));
